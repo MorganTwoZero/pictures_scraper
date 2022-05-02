@@ -96,7 +96,13 @@ def homeline(
         {"request": request, "posts": posts, "page": page, "url": inspect.stack()[0][3]}
         )
 
-@app.get("/api/")
-def api(db: Session = Depends(get_db), page: int = 1, offset: int = 20):
+@app.get("/api/homeline")
+def api_homeline(db: Session = Depends(get_db), page: int = 1, offset: int = 20):
+    homeline_save()
+    posts = read_create.get_homeline(db, page, offset)
+    return posts
+
+@app.get("/api/honkai")
+def api_honkai(db: Session = Depends(get_db), page: int = 1, offset: int = 20):
     posts = read_create.get_posts(db, page, offset)
     return posts

@@ -1,7 +1,7 @@
 <template>  
     <NavBar />
     <div class="main container">
-      <router-view/>
+      <router-view :key="$route.fullPath"/>
     </div>
 </template>
 
@@ -22,7 +22,18 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
 }
+
 .main {
   padding-top: 5em;
+}
+
+.main.container {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+}
+
+.main.container > div {
+    margin: 10px;
 }
 </style>
