@@ -1,6 +1,6 @@
 <template>
     <div v-for="post in posts" :key="post.post_link">
-      <PostsComponent :post="post" />
+      <PostsComponent :post="post"/>
     </div>
 </template>
 <script>
@@ -15,12 +15,12 @@ export default {
   data() {
     return {
       posts: [],
+      page: 1,
     };
   },
   methods: {
     getMessage() {
-      console.log(this.$route);
-      axios.get(this.$route.path)
+      axios.get(this.$route.path + '?page=' + this.page + '&offset=5')
         .then((res) => {
           this.posts = res.data;
         })
@@ -28,9 +28,32 @@ export default {
           console.error(error);
         });
     },
+    getNextPosts() {
+      window.onscroll = () => {
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+          this.page++;
+          axios.get(this.$route.path + '?page=' + this.page + '&offset=5').then(response => {
+            this.posts = this.posts.concat(response.data);
+            });
+          }
+        }
+    },
   },
-  created() {
+  beforeMount() {
     this.getMessage();
+  },
+  mounted() {
+    this.getNextPosts();
   },
 }
 </script>
+
+<style scoped>
+div {
+    border-radius: 2px;
+    padding: 10px;
+    border: 1px solid rgb(0, 0, 0);
+    width: max-content;
+    height: max-content;
+}
+</style>

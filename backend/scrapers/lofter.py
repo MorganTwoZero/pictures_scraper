@@ -3,8 +3,8 @@ from datetime import datetime, timedelta
 
 import requests
 from bs4 import BeautifulSoup
-from backend.db.read_create import save_to_db
-from backend.db.schemas import PostCreate
+from db.read_create import save_to_db
+from db.schemas import PostCreate
 
 TIMEZONE = int(os.environ['TIMEZONE'])
 

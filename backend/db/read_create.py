@@ -1,14 +1,17 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 
-from backend.db.models import Post
-from backend.db.database import SessionLocal
+from db.models import Post
+from db.database import SessionLocal
 
 db = SessionLocal()
 
-def get_posts(db: Session, page, offset):
+def get_posts(db: Session, page, offset, route):
     page = page - 1
-    return db.query(Post).order_by(desc(Post.created)).filter(Post.source!='homeline').offset(page * offset).limit(offset).all()
+    if route == 'homeline':
+        return db.query(Post).order_by(desc(Post.created)).filter_by(source='homeline').offset(page * offset).limit(offset).all()
+    else:
+        return db.query(Post).order_by(desc(Post.created)).filter(Post.source!='homeline').offset(page * offset).limit(offset).all()
 
 def get_homeline(db: Session, page, offset):
     page = page - 1

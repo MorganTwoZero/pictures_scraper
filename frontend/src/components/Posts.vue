@@ -1,48 +1,47 @@
 <template>
-<div type="image" class="post.source">
-    <a class="image" :href="post.post_link">
-        <img :src="post.preview_link">
-        <div class="counter_wrapper">
-            <div class="images_count">
-                {{post.images_number}}
-            </div>
+<a class="image" :href="post.post_link">
+    <img :src="post.preview_link">
+    <div class="counter_wrapper">
+        <div class="images_count">
+            {{ post.images_number }}
         </div>
-    </a>
-    <div class="author">
-        <a :href="post.author_link">
-            <img :src="post.author_profile_image">
-            {{post.author}}
-        </a>
-        {{post.created}}
     </div>
+</a>
+<div class="author">
+    <a :href="post.author_link">
+        <img :src="post.author_profile_image">
+        {{ post.author }}
+    </a>
+    {{ created }}
 </div>
 </template>
 
 <script>
 export default {
-  name: 'PostsComponent',
-  props: {
-    post : {
-      type: Object,
-      required: true,
+    name: 'PostsComponent',
+    props: {
+        post: {
+            type: Object,
+            required: true,
+        },
     },
-  },
+    computed: {
+        created() {
+            return new Date(this.post.created).toLocaleTimeString('ru');
+        },
+    },
 };
 </script>
 
 <style scoped>
-div[type="image"] {
-    border-radius: 2px;
-    padding: 10px;
-    border: 1px solid rgb(0, 0, 0);
-    width: max-content;
-    height: max-content;
-}
-
 img {
     max-width: 90vw;
     max-height: 80vh;
     object-fit: cover;
+}
+
+.author {
+    max-width: fit-content;
 }
 
 .author img {
@@ -74,5 +73,6 @@ img {
     position: relative;
     display: flex;
     margin-bottom: 10px;
+    width: max-content;
 }
 </style>

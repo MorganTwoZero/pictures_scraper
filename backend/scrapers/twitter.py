@@ -4,8 +4,8 @@ from datetime import datetime, timedelta
 from re import sub
 
 import requests
-from backend.db.read_create import save_to_db
-from backend.db.schemas import PostCreate
+from db.read_create import save_to_db
+from db.schemas import PostCreate
 
 TWITTER_SEARCH_URL = os.environ['TWITTER_SEARCH_URL']
 TIMEZONE = int(os.environ['TIMEZONE'])
