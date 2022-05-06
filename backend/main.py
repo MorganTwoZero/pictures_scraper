@@ -1,4 +1,8 @@
 import os
+from dotenv import load_dotenv
+dotenv_path = os.path.dirname(__file__) + '/../.env'
+if os.path.exists(dotenv_path):
+    load_dotenv(dotenv_path)
 
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -22,7 +26,10 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8080"],
+    allow_origins=[
+        os.environ.get('FRONTEND_URL'),
+        "http://localhost:8080", # for local development, notice no trailing slash
+        ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

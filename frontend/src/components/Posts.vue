@@ -1,19 +1,19 @@
 <template>
-<a class="image" :href="post.post_link">
-    <img :src="post.preview_link">
-    <div class="counter_wrapper">
-        <div class="images_count">
-            {{ post.images_number }}
+    <a @click="toClipboard" class="image" :href="post.post_link">
+        <img :src="post.preview_link">
+        <div class="counter_wrapper">
+            <div class="images_count">
+                {{ post.images_number }}
+            </div>
         </div>
-    </div>
-</a>
-<div class="author">
-    <a :href="post.author_link">
-        <img :src="post.author_profile_image">
-        {{ post.author }}
     </a>
-    {{ created }}
-</div>
+    <div class="author">
+        <a :href="post.author_link">
+            <img :src="post.author_profile_image">
+            {{ post.author }}
+        </a>
+        {{ created }}
+    </div>
 </template>
 
 <script>
@@ -28,6 +28,20 @@ export default {
     computed: {
         created() {
             return new Date(this.post.created).toLocaleTimeString('ru');
+        },
+    },
+    methods: {
+        toClipboard(e) {
+            if (this.post.source !== 'pixiv') {            
+                e.preventDefault();
+                let text = '';
+                if (this.post.source === 'twitter') {
+                    text = `${this.post.preview_link}?name=orig <${this.post.post_link}>`;
+                } else {
+                    text = `${this.post.preview_link.replace(/\?.*/, '')} <${this.post.post_link}>`;
+                }
+                navigator.clipboard.writeText(text);
+            }
         },
     },
 };

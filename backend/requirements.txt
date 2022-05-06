@@ -3,6 +3,4 @@ uvicorn[standard]
 sqlalchemy
 requests
 fastapi-utils
-python-dotenv
 beautifulsoup4
-jinja2

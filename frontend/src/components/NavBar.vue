@@ -24,8 +24,6 @@ export default {
   name: 'NavBar',
   methods: {
     refresh(e) {
-      console.log(e.target.getAttribute('href').slice(1));
-      console.log(this.$route.path);
       if (e.target.getAttribute('href').slice(1) == this.$route.path) {
         location.reload();
       }

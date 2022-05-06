@@ -3,6 +3,10 @@ import PostsView from '../views/PostsView.vue'
 
 const routes = [
   {
+    path: '/',
+    redirect: '/honkai',
+  },
+  {
     path: '/honkai',
     name: 'honkai',
     component: PostsView,
