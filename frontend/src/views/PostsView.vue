@@ -30,7 +30,7 @@ export default {
     },
     getNextPosts() {
       window.onscroll = () => {
-        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+        if ((window.innerHeight + Math.ceil(window.scrollY)) >= document.body.offsetHeight) { //ceil for mobile
           this.page++;
           axios.get(this.$route.path + '?page=' + this.page + '&offset=5').then(response => {
             this.posts = this.posts.concat(response.data);

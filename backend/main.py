@@ -29,6 +29,7 @@ app.add_middleware(
     allow_origins=[
         os.environ.get('FRONTEND_URL'),
         "http://localhost:8080", # for local development, notice no trailing slash
+        "http://192.168.2.1:8080", # access through vpn
         ],
     allow_credentials=True,
     allow_methods=["*"],
