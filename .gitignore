@@ -1,6 +1,6 @@
 .ps1
 .vscode
-*.pyc
+*.pyc*
 
 # Environments
 .env

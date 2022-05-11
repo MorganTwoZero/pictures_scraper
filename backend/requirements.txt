@@ -4,6 +4,7 @@ sqlalchemy
 requests
 fastapi-utils
 beautifulsoup4
+python-dotenv
 python-multipart
 python-jose[cryptography]
 passlib[bcrypt]

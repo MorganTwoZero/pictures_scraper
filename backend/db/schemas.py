@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from pydantic import BaseModel
 
 
@@ -8,32 +9,25 @@ class PostCreate(BaseModel):
     images_number: int = 1    
     author: str
     author_link: str
-    author_profile_image: str = ''
+    author_profile_image: str | None = None
     source: str
     created: datetime
 
     class Config:
         orm_mode = True
 
-
 class Token(BaseModel):
-    token: str
-    user: str
-    expires: datetime
-    token_type: str = 'bearer'
-
+    access_token: str
+    token_type: str
 
 class User(BaseModel):
-    user_name: str
-    settings: str | None = None # set defalts from env variables
-
+    username: str
+    
     class Config:
         orm_mode = True
-
 
 class UserIn(User):
     password: str
 
-
-class UserOut(User):
-    token: Token
+class UserDB(User):
+    hashed_password: str
