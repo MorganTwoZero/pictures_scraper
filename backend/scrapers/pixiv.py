@@ -33,6 +33,6 @@ def pixiv_save(db):
                 ) + timedelta(hours=TIMEZONE),
                 author=post['author_details']['user_name'],
                 author_link=f"{AUTHOR_LINK_TEMPLATE + str(post['author_details']['user_id'])}",
-                source='pixiv',
+                honkai=True,
                 ),
             db)

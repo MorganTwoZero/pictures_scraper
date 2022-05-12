@@ -1,7 +1,7 @@
 from datetime import timedelta, datetime
 from typing import Generator
 
-from fastapi import APIRouter, Depends, FastAPI, HTTPException
+from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi_utils.tasks import repeat_every
@@ -38,6 +38,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+def update(db):
+    print('Start update ' + str(datetime.now()))
+    homeline_save(db)
+    print('Homeline updated')
+    twitter_save(db)
+    print('Twitter updated')
+    pixiv_save(db)
+    print('Pixiv updated')
+    mihoyo_bbs_save(db)
+    print('Mihoyo updated')
+    lofter_save(db)
+    print('Lofter updated')
+    print('End update ' + str(datetime.now()))
+
 # Dependency
 def get_db() -> Generator[Session, None, None]:
     try:
@@ -57,20 +71,9 @@ def test_update():
 
 # Routes
 @app.get("/update")
-def update(db: Session = Depends(get_db)):
-    print('Start update ' + str(datetime.now()))
-    homeline_save(db)
-    print('Homeline updated')
-    twitter_save(db)
-    print('Twitter updated')
-    pixiv_save(db)
-    print('Pixiv updated')
-    mihoyo_bbs_save(db)
-    print('Mihoyo updated')
-    lofter_save(db)
-    print('Lofter updated')
-    print('End update ' + str(datetime.now()))
-    return {'message': 'Update successful'}
+def start_update(background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    background_tasks.add_task(update, db)
+    return {'message': 'Update started'}
 
 @app.get("/{route}", response_model=list[PostCreate])
 def api_posts(
@@ -80,7 +83,7 @@ def api_posts(
     offset: int = 20
         ):
 
-    posts = get_posts(db, page, offset, route=route)
+    posts = get_posts(db, page, offset, route)
     return posts
 
 @app.post('/register')

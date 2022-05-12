@@ -1,6 +1,6 @@
-.ps1
 .vscode
 *.pyc*
+.db
 
 # Environments
 .env
@@ -9,7 +9,7 @@
 # vue
 .DS_Store
 node_modules
-/dist
+**/dist
 
 
 # local env files

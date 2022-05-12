@@ -24,10 +24,10 @@ def homeline_save(db):
                 created=datetime.strptime(
                     item['created_at'], '%a %b %d %H:%M:%S %z %Y'
                     ) + timedelta(hours=TIMEZONE),
-                source='homeline',
                 images_number=len(item['entities']['media']),
                 author=f'{item["user"]["name"]}@{item["user"]["screen_name"]}',
                 author_link=f'https://twitter.com/{item["user"]["screen_name"]}',
                 author_profile_image=item['user']['profile_image_url_https'],
+                honkai=False
                 ),
             db)

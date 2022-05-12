@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Boolean
 
 from db.base_class import Base
 
@@ -15,7 +15,7 @@ class Post(Base): # type: ignore
     author_link = Column(String, nullable=True, default=None)
     author_profile_image = Column(String, nullable=True, 
     default=None)
-    source = Column(String)
+    honkai = Column(Boolean)
 
 class User(Base): # type: ignore
     __tablename__ = "users"

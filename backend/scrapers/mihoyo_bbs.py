@@ -29,7 +29,7 @@ def mihoyo_bbs_save(db):
                 author=post['user']['nickname'],
                 author_link=f"{AUTHOR_LINK_TEMPLATE + str(post['user']['uid'])}",
                 author_profile_image=post['user']['avatar_url'],
-                source='mihoyo_bbs',
+                honkai=True,
                     ),
                 db)
     except Exception:

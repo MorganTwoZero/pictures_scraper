@@ -28,13 +28,13 @@ def twitter_save(db):
                     created=datetime.strptime(
                         item['created_at'], '%a %b %d %H:%M:%S %z %Y'
                         ) + timedelta(hours=TIMEZONE),
-                    source='twitter',
                     images_number=len(item['entities']['media']),
                     author_link=sub(r'/status/.*', '', 
                         item['entities']['media'][0]['expanded_url']),
                     #not a "user@screen_name" because of api's data
                     author=sub(r'/status/.*', '', 
                         item['entities']['media'][0]['expanded_url'])[20:],
-                    author_profile_image=None
+                    author_profile_image=None,
+                    honkai=True,
                     ),
                 db)

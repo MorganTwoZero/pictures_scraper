@@ -10,8 +10,8 @@ class PostCreate(BaseModel):
     author: str
     author_link: str
     author_profile_image: str | None = None
-    source: str
     created: datetime
+    honkai: bool
 
     class Config:
         orm_mode = True
