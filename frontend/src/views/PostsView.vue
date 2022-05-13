@@ -38,6 +38,9 @@ export default {
           }
         }
     },
+    clearPosts() {
+      this.posts = [];
+    },
   },
   beforeMount() {
     this.getMessage();

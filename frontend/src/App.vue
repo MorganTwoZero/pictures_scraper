@@ -1,5 +1,5 @@
 <template>  
-    <NavBar />
+    <NavBar @update="update"/>
     <div class="main container">
       <router-view :key="$route.fullPath"/>
     </div>
@@ -7,11 +7,20 @@
 
 <script>
 // @ is an alias to /src
+import axios from 'axios';
 import NavBar from '@/components/NavBar.vue'
 export default {
   components: {
     NavBar
-  }
+  }, 
+  methods: {
+    update() {
+      axios.get('/update').then(response => {
+        console.log(response.data);
+      }
+      );
+    }
+  },
 }
 </script>
 

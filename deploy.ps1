@@ -1,0 +1,2 @@
+ssh root@vpn "docker compose stop && rm -rf pictures_scraper && git clone https://github.com/MorganTwoZero/pictures_scraper"
+cat .env | ssh root@vpn "cat >> pictures_scraper/.env  && cd pictures_scraper && docker compose up --build"

@@ -11,4 +11,3 @@ Users -> personal "ignore list" for each user
 Frontend sends user id to backend(cookies?), backend excludes posts with idnored authors/tags in user's ignore list
 Check ignored in request handler
 alembic
-Move read_create to utils
