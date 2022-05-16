@@ -30,7 +30,6 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         settings.FRONTEND_URL,
-        "http://localhost", # for local development, notice no trailing slash
         ],
     allow_credentials=True,
     allow_methods=["*"],

@@ -1,6 +1,5 @@
 FROM python:slim
 
-RUN mkdir app
 WORKDIR /app
 
 ENV PATH="${PATH}:/root/.local/bin"
