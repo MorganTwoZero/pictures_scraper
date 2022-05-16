@@ -65,15 +65,15 @@ def test_update():
     Ugly hack to update on startup and timeout
     because of the way Depends() works
     '''
-    client.get("/update")
+    client.get("/api/update")
 
 # Routes
-@app.get("/update")
+@app.get("/api/update")
 def start_update(background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     background_tasks.add_task(update, db)
     return {'message': 'Update started'}
 
-@app.get("/{route}", response_model=list[PostCreate])
+@app.get("/api/{route}", response_model=list[PostCreate])
 def api_posts(
     db: Session = Depends(get_db), 
     route: str | None = None, 
@@ -84,7 +84,7 @@ def api_posts(
     posts = get_posts(db, page, offset, route)
     return posts
 
-@app.post('/register')
+@app.post('/api/register')
 def register(user: UserIn, db: Session = Depends(get_db)):
 
     if users.create_user(user, db) is None:
@@ -93,7 +93,7 @@ def register(user: UserIn, db: Session = Depends(get_db)):
     return {"message": "User created successfully"}
 
 
-@app.post("/token", response_model=Token)
+@app.post("/api/token", response_model=Token)
 async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)
@@ -114,7 +114,7 @@ async def login_for_access_token(
 
     return {"access_token": access_token, "token_type": "bearer"}
 
-@app.get("/users/me/", response_model=User)
+@app.get("/api/users/me/", response_model=User)
 async def read_users_me(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db)

@@ -3,16 +3,16 @@ import PostsView from '../views/PostsView.vue'
 
 const routes = [
   {
-    path: '/',
-    redirect: '/honkai',
+    path: '',
+    redirect: 'honkai',
   },
   {
-    path: '/honkai',
+    path: 'honkai',
     name: 'honkai',
     component: PostsView,
   },
   {
-    path: '/homeline',
+    path: 'homeline',
     name: 'homeline',
     component: PostsView
   },
