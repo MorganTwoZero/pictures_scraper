@@ -17,22 +17,43 @@
           <li class="nav-item">
             <a @click="$emit('update')" class="nav-link">Update</a>
           </li>
+          <li class="nav-item">
+            <router-link class="nav-link" to="/about">About</router-link>
+          </li>
+          <li v-if="isAuthenticated" class="nav-item">
+            <a class="nav-link" @click="logout">Logout</a>
+          </li>
+          <li v-if="isAuthenticated" class="nav-item">
+            <router-link class="nav-link" to="/user">{{ User }}</router-link>
+          </li>
+          <li v-if="!isAuthenticated" class="nav-item">
+            <router-link class="nav-link" to="/login">Login</router-link>
+          </li>
+          <li v-if="!isAuthenticated" class="nav-item">
+            <router-link class="nav-link" to="/register">Register</router-link>
+          </li>
         </ul>
       </div>
     </div>
   </nav>
 </template>
 
-<script>
-export default {
-  name: 'NavBar',
-  methods: {
-    refresh(e) {
-      if (e.target.getAttribute('href').slice(1) == this.$route.path) {
-        location.reload();
-      }
-    },
-  },
+<script setup>
+import { useStore } from '@/store'
+import { storeToRefs } from 'pinia'
+import router from '@/router'
+const store = useStore()
+
+const { isAuthenticated, User } = storeToRefs(store)
+
+function refresh(e) {
+  if (e.target.getAttribute('href').slice(1) == router.path) {
+    location.reload();
+  }
+}
+function logout() {
+  store.LogOut();
+  router.push('/honkai');
 }
 </script>
 

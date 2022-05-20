@@ -1,26 +1,28 @@
-<template>  
-    <NavBar @update="update"/>
-    <div class="main container">
-      <router-view :key="$route.fullPath"/>
-    </div>
+<template>
+  <NavBar @update="update" />
+  <div class="main container">
+    <router-view :key="$route.fullPath" />
+  </div>
 </template>
 
-<script>
-// @ is an alias to /src
+<script setup>
 import axios from 'axios';
 import NavBar from '@/components/NavBar.vue'
-export default {
-  components: {
-    NavBar
-  }, 
-  methods: {
-    update() {
-      axios.get('/update').then(response => {
-        console.log(response.data);
-      }
-      );
-    }
-  },
+import { useToast } from "vue-toastification";
+const toast = useToast()
+
+function update() {
+  toast.info("Update requested")
+  axios.get('/update').then(response => {
+    toast(response.data.message, {
+      duration: 1000
+    });
+  }).catch(error => {
+    console.log(error);
+    toast.error(error, {
+      duration: 1000
+    });
+  });
 }
 </script>
 
@@ -37,12 +39,12 @@ export default {
 }
 
 .main.container {
-    display: flex;
-    flex-flow: column;
-    align-items: center;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
 }
 
-.main.container > div {
-    margin: 10px;
+.main.container>div {
+  margin: 10px;
 }
 </style>

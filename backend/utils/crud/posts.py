@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import desc
 
-from db.schemas import PostCreate
+from db.schemas import PostScheme
 from db.models import Post as PostModel
 from utils.crud.base import unique
 
@@ -12,11 +11,11 @@ def get_posts(db: Session, page, offset, route):
         'honkai': True,
         'homeline': False
     }
-    return db.query(PostModel).order_by(desc(PostModel.created)
+    return db.query(PostModel).order_by(PostModel.created.desc()
         ).filter_by(honkai=routes[route]
         ).offset(page * offset).limit(offset).all()
 
-def save_to_db(post: PostCreate, db: Session):
+def save_to_db(post: PostScheme, db: Session):
     db_post = PostModel(**post.dict())
     if unique(PostModel, db, 'post_link', post.post_link):
         db.add(db_post)

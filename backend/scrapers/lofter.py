@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import requests
 from bs4 import BeautifulSoup
 
-from db.schemas import PostCreate
+from db.schemas import PostScheme
 from settings import settings
 from utils.crud.posts import save_to_db
 
@@ -16,12 +16,12 @@ LOFTER_TAGS = settings.LOFTER_TAGS.split()
 def lofter_save(db):
     for tag in LOFTER_TAGS:
         try:
-            r = requests.get(url=SEARCH_URL_TEMPLATE + tag)    
+            r = requests.get(url=SEARCH_URL_TEMPLATE + tag, timeout=10)    
             soup = BeautifulSoup(r.text, 'html.parser')
 
             for item in soup.find_all(class_='m-mlist'):
                 if item.find(class_='imgc') is not None:
-                    save_to_db(PostCreate(
+                    save_to_db(PostScheme(
                         author_link=item.find(class_='w-img ptag').a.attrs['href'],
                         author=item.find(class_='w-img ptag').a.attrs['title'],
                         author_profile_image=item.find(class_='w-img ptag').img.attrs['src'],

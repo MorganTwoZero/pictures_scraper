@@ -4,7 +4,7 @@ from re import sub
 
 import requests
 
-from db.schemas import PostCreate
+from db.schemas import PostScheme
 from settings import settings
 from utils.crud.posts import save_to_db
 
@@ -21,7 +21,7 @@ def twitter_save(db):
 
     for item in r:
         if 'media' in item['entities']:
-            save_to_db(PostCreate(
+            save_to_db(PostScheme(
                     #-7 due to 'photo/1' in link
                     post_link=item['entities']['media'][0]['expanded_url'][:-7],
                     preview_link=item['entities']['media'][0]['media_url_https'],

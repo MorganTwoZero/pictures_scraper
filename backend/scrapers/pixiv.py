@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 import requests
 
-from db.schemas import PostCreate
+from db.schemas import PostScheme
 from settings import settings
 from utils.crud.posts import save_to_db
 
@@ -25,7 +25,7 @@ def pixiv_save(db):
         scary_tag = any(tag in post['tags'] for tag in SCARY_TAGS)
         scary_author = post['author_details']['user_name'] in SCARY_AUTHORS
         if not scary_tag and not scary_author:
-            save_to_db(PostCreate(
+            save_to_db(PostScheme(
                 post_link=f"{POST_LINK_TEMPLATE + post['id']}",
                 preview_link=post['url'],
                 images_number=post['page_count'],                    

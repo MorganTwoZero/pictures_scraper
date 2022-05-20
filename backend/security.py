@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from passlib.context import CryptContext
 from jose import JWTError, jwt
 
-from db.schemas import UserDB
+from db.schemas import UserInDB
 from settings import settings
 from exceptions import credentials_exception
 
@@ -36,5 +36,5 @@ def create_access_token(data: dict,
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
 
-def verify_password(plain_password: str, user: UserDB) -> bool:
+def verify_password(plain_password: str, user: UserInDB) -> bool:
     return pwd_context.verify(plain_password, user.hashed_password)

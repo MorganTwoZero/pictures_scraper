@@ -3,7 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel
 
 
-class PostCreate(BaseModel):
+class PostScheme(BaseModel):
     post_link: str    
     preview_link: str
     images_number: int = 1    
@@ -26,8 +26,18 @@ class User(BaseModel):
     class Config:
         orm_mode = True
 
-class UserIn(User):
+class UserOut(User):
+    pass
+
+class UserFront(User):
     password: str
 
-class UserDB(User):
+class UserInDB(User):
     hashed_password: str
+
+class Settings(BaseModel):
+    username: str
+    authors: str
+    tags: str
+    pixiv_header: str
+    twitter_header: str

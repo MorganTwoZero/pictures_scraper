@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 import requests
 
-from db.schemas import PostCreate
+from db.schemas import PostScheme
 from settings import settings
 from utils.crud.posts import save_to_db
 
@@ -17,10 +17,10 @@ AUTHOR_LINK_TEMPLATE = 'https://bbs.mihoyo.com/bh3/accountCenter/postList?id='
 
 def mihoyo_bbs_save(db):
     try:
-        result = requests.get(url=SEARCH_URL).json()['data']['list']
+        result = requests.get(url=SEARCH_URL, timeout=10).json()['data']['list']
 
         for post in result:
-            save_to_db(PostCreate(
+            save_to_db(PostScheme(
                 post_link=f"{POST_LINK_TEMPLATE + str(post['post']['post_id'])}",
                 preview_link=f"{post['post']['cover'] + POST_PREVIEW_TEMPLATE}",              
                 created=datetime.utcfromtimestamp(post['post']['created_at']
