@@ -13,13 +13,23 @@ def get_image(link: str):
     ).content
     return img
 
+def get_image_big(post_id: int):
+    url = 'https://www.pixiv.net/touch/ajax/illust/details?illust_id=' + str(post_id)
+    post = requests.get(
+        url=url,
+        headers=PIXIV_HEADER
+    ).json()['body']['illust_details']
+    if post.get('url_big'):
+        img_url = post['url_big']
+    else:
+        img_url = post['manga_a'][0]['url_big']
+    img_url
+    img = requests.get(img_url, headers=PIXIV_HEADER).content
+    return img
+
 def embed(post_id: int):
     url = 'https://www.pixiv.net/touch/ajax/illust/details?illust_id=' + str(post_id)
     post = requests.get(url, headers=PIXIV_HEADER).json()['body']['illust_details']
-    img_url = ''
-    if post.get('manga_a'):
-        img_url = post['manga_a'][0]['url_big']
-    else: 
-        img_url = post['url_big']
+    img_url = post['url']
     img = requests.get(img_url, headers=PIXIV_HEADER).content
     return img

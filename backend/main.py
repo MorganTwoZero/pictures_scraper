@@ -2,6 +2,7 @@ from datetime import timedelta, datetime
 from typing import Generator, Literal
 
 from fastapi import Body, Depends, FastAPI, HTTPException, Response, Request
+from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi_utils.tasks import repeat_every
@@ -16,7 +17,7 @@ from security import create_access_token, verify_password, verify_token
 from settings import settings
 from utils.crud import users
 from utils.crud.posts import get_posts
-from utils.image import get_image, embed
+from utils.image import get_image, get_image_big, embed
 
 
 
@@ -156,12 +157,36 @@ def load_image(link: str = Body(default=None)):
     image = get_image(link)
     return Response(content=image, media_type="image")
 
-@app.get('/api/embed/{post_id}', response_class=Response)
-def get_embed(post_id: int):
+@app.get('/api/get_image/big', response_class=Response)
+def load_image_big(post_id: int):
+    image = get_image_big(post_id)
+    return Response(content=image, media_type="image")
+
+@app.get('/api/embed/{post_id}.jpg', response_class=Response)
+def get_embed_img(post_id: int):
     image = embed(post_id)
     if image is None:
         raise HTTPException(status_code=404, detail="Post not found")
     return Response(content=image, media_type="image")
+
+@app.get('/api/embed/{post_id}', response_class=HTMLResponse)
+def get_embed(post_id: int):
+    html_content = """
+        <html>
+            <head>
+                <meta property="og:title" content="Source" />
+                 <meta property="og:url" content="https://www.pixiv.net/en/artworks/{}" />
+                <meta property="og:image" content="https://honkai-pictures.ru/api/embed/{}.jpg"/>
+
+                <!-- Include this to make the og:image larger -->
+                <meta name="twitter:card" content="summary_large_image">
+            </head>
+            <body>
+                <h1>Look ma! HTML!</h1>
+            </body>
+        </html>
+        """.format(post_id, post_id)
+    return HTMLResponse(content=html_content, status_code=200)
 
 @app.get("/api/{route}", response_model=list[PostScheme])
 def api_posts(
