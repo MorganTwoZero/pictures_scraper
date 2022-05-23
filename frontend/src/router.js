@@ -1,4 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
+import { useStore } from '@/store'
+
 import PostsView from './views/PostsView.vue'
 import AboutView from './views/AboutView.vue'
 
@@ -43,6 +45,9 @@ const routes = [
     component: () => import('./views/UserView.vue'),
     meta: {title: 'User'},
   },
+  {
+    path: '/:catchAll(.*)', redirect: '/' 
+  }
 ]
 
 const router = createRouter({
@@ -58,3 +63,17 @@ router.afterEach((to) => {
 });
 
 export default router
+
+router.beforeEach((to, from, next) => {
+  // redirect to login page if not logged in and trying to access a restricted page
+  const publicPages = ['/user'];
+  const authRequired = publicPages.includes(to.path);
+  const store = useStore();
+  const loggedIn = store.isAuthenticated;
+
+  if (authRequired && !loggedIn) {
+    return next('/login');
+  }
+
+  next();
+})

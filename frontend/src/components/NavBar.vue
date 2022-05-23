@@ -47,7 +47,7 @@ const store = useStore()
 const { isAuthenticated, User } = storeToRefs(store)
 
 function refresh(e) {
-  if (e.target.getAttribute('href').slice(1) == router.path) {
+  if (e.target.getAttribute('href').slice(1) == router.currentRoute.value.fullPath) {
     location.reload();
   }
 }

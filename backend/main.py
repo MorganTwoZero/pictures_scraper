@@ -1,7 +1,7 @@
 from datetime import timedelta, datetime
 from typing import Generator, Literal
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Response, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi_utils.tasks import repeat_every
@@ -71,6 +71,75 @@ def test_update():
     client.get("/api/update")
 
 # Routes
+#Users
+@app.post('/api/register')
+def register(user: UserFront, db: Session = Depends(get_db)):
+
+    if users.create_user(user, db) is None:
+        raise HTTPException(status_code=400, detail="User already exists")
+
+    return {"message": "User created successfully"}
+
+
+@app.post("/api/login")
+async def login_for_access_token(
+    response: Response,
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db),
+        ):
+        
+    user = users.get_user_by_username(username=form_data.username, db=db)
+    if not user:
+        raise credentials_exception
+
+    correct_password = verify_password(form_data.password, user)
+    if not correct_password:
+        raise credentials_exception
+
+    access_token_expires = timedelta(
+        minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token: str = create_access_token(
+        data={"sub": user.username}, expires_delta=access_token_expires)
+
+    response.set_cookie(
+        key="Authorization", 
+        value=access_token, 
+        httponly=True, 
+        max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60, 
+        samesite='Strict',
+        secure=True,
+        ) 
+
+    return {'message': 'Authenticated'}
+
+@app.get("/api/logout")
+async def logout(response: Response):
+    response.set_cookie(
+        key="Authorization", 
+        value="", 
+        httponly=True, 
+        max_age=0, 
+        samesite='Strict',
+        secure=True,
+        ) 
+    return {'message': 'Logged out'}
+
+@app.get("/api/user", response_model=UserOut)
+async def read_users_me(
+    request: Request,
+    db: Session = Depends(get_db)
+        ):
+
+    token = request.cookies.get('Authorization')
+
+    username = verify_token(token)
+    if not username:
+        raise HTTPException(status_code=400, detail="Invalid token")
+    user = users.get_user_by_username(username, db)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
 #Content
 @app.get("/api/update")
 def start_update(db: Session = Depends(get_db)):
@@ -90,44 +159,3 @@ def api_posts(
 
     posts = get_posts(db, page, offset, route)
     return posts
-
-#Users
-@app.post('/api/register')
-def register(user: UserFront, db: Session = Depends(get_db)):
-
-    if users.create_user(user, db) is None:
-        raise HTTPException(status_code=400, detail="User already exists")
-
-    return {"message": "User created successfully"}
-
-
-@app.post("/api/login", response_model=Token)
-async def login_for_access_token(
-    form_data: OAuth2PasswordRequestForm = Depends(),
-    db: Session = Depends(get_db)
-        ):
-        
-    user = users.get_user_by_username(username=form_data.username, db=db)
-    if not user:
-        raise credentials_exception
-
-    correct_password = verify_password(form_data.password, user)
-    if not correct_password:
-        raise credentials_exception
-
-    access_token_expires = timedelta(
-        minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires)
-
-    return {"access_token": access_token, "token_type": "bearer"}
-
-@app.get("/api/users/me/", response_model=UserOut)
-async def read_users_me(
-    token: str = Depends(oauth2_scheme),
-    db: Session = Depends(get_db)
-        ):
-
-    username = verify_token(token)
-    user = users.get_user_by_username(username, db)
-    return user

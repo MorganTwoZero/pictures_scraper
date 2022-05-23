@@ -30,8 +30,7 @@ const form = {
 }
 
 function submit() {
-  store.LogIn(form).then(response => {
-    console.log(response);
+  store.LogIn(form).then(() => {
     showError.e = false;
     router.push('/')
   }, error => {

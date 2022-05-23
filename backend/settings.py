@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     UPDATE_TIMEOUT: int = 20
 
     # Deployment settings
-    FRONTEND_URL: str
+    FRONTEND_URL: str = 'http://localhost:8080'
 
     # Credentials
     PIXIV_HEADER: str

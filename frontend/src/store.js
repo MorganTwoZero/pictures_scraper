@@ -35,9 +35,11 @@ export const useStore = defineStore({
                     method: 'post',
                     url: 'login',
                     data: `username=${form.username}&password=${form.password}`
-                }).then(() => {
-                    this.$patch({ user: form.username })
-                    resolve();
+                }).then(response => {
+                    if (response.status == 200) {
+                        this.$patch({ user: form.username });
+                        resolve();
+                    }
                 }).catch(err => {
                     console.log(err)
                     reject(err);
@@ -46,6 +48,7 @@ export const useStore = defineStore({
         },
         async LogOut() {
             this.$patch({ user: null })
+            await axios.get('logout');
         }
     }
 })
