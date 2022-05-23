@@ -16,7 +16,7 @@ from security import create_access_token, verify_password, verify_token
 from settings import settings
 from utils.crud import users
 from utils.crud.posts import get_posts
-from utils.image import get_image
+from utils.image import get_image, embed
 
 
 
@@ -154,7 +154,14 @@ def start_update(db: Session = Depends(get_db)):
 @app.post('/api/get_image', response_class=Response)
 def load_image(link: str = Body(default=None)):
     image = get_image(link)
-    return Response(content=image, media_type="image/png")
+    return Response(content=image, media_type="image")
+
+@app.get('/api/embed/{post_id}', response_class=Response)
+def get_embed(post_id: int):
+    image = embed(post_id)
+    if image is None:
+        raise HTTPException(status_code=404, detail="Post not found")
+    return Response(content=image, media_type="image")
 
 @app.get("/api/{route}", response_model=list[PostScheme])
 def api_posts(

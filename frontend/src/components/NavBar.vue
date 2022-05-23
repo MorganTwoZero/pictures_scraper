@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar navbar-expand-sm navbar-light fixed-top bg-light">
+  <nav @click="collapseNavBar" class="navbar navbar-expand-sm navbar-light fixed-top bg-light">
     <div class="container">
       <a class="navbar-brand" href="/">FastAPI + Vue</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
@@ -54,6 +54,12 @@ function refresh(e) {
 function logout() {
   store.LogOut();
   router.push('/honkai');
+}
+function collapseNavBar() {
+  const navbar = document.querySelector('.navbar-collapse');
+  if (navbar.classList.contains('show')) {
+    navbar.classList.remove('show');
+  }
 }
 </script>
 

@@ -11,4 +11,4 @@ Set up nginx. Made a little clean up.
 Added user system on the frontend.
 
 # [23.05.2022]
-Routes guard. Token cookie auth.
+Routes guard. Token cookie auth. Display pixiv images without referer extentions. Pixiv embeds. Dropdown collapse.
