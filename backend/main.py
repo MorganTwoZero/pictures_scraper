@@ -17,7 +17,7 @@ from security import create_access_token, verify_password, verify_token
 from settings import settings
 from utils.crud import users
 from utils.crud.posts import get_posts
-from utils.image import get_image, get_image_big, embed
+from utils.image import request_image
 
 
 
@@ -152,41 +152,10 @@ def start_update(db: Session = Depends(get_db)):
     update(db)
     return {'message': 'Updated'}
 
-@app.post('/api/get_image', response_class=Response)
-def load_image(link: str = Body(default=None)):
-    image = get_image(link)
-    return Response(content=image, media_type="image")
-
-@app.get('/api/get_image/big', response_class=Response)
-def load_image_big(post_id: int):
-    image = get_image_big(post_id)
-    return Response(content=image, media_type="image")
-
 @app.get('/api/embed/{post_id}.jpg', response_class=Response)
-def get_embed_img(post_id: int):
-    image = embed(post_id)
-    if image is None:
-        raise HTTPException(status_code=404, detail="Post not found")
+def get_embed_img(post_id: int, big: bool = False):
+    image = request_image(post_id, big)
     return Response(content=image, media_type="image")
-
-@app.get('/api/embed/{post_id}', response_class=HTMLResponse)
-def get_embed(post_id: int):
-    html_content = """
-        <html>
-            <head>
-                <meta property="og:title" content="Source" />
-                 <meta property="og:url" content="https://www.pixiv.net/en/artworks/{}" />
-                <meta property="og:image" content="https://honkai-pictures.ru/api/embed/{}.jpg"/>
-
-                <!-- Include this to make the og:image larger -->
-                <meta name="twitter:card" content="summary_large_image">
-            </head>
-            <body>
-                <h1>Look ma! HTML!</h1>
-            </body>
-        </html>
-        """.format(post_id, post_id)
-    return HTMLResponse(content=html_content, status_code=200)
 
 @app.get("/api/{route}", response_model=list[PostScheme])
 def api_posts(

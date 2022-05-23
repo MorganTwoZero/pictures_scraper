@@ -34,23 +34,22 @@ export default {
     },
     methods: {
         toClipboard(e) {
-            if (this.post.source !== 'pixiv') {
                 e.preventDefault();
                 let text = '';
-                if (this.post.source === 'twitter') {
-                    text = `${this.post.preview_link}?name=orig <${this.post.post_link}>`;
+                if (this.post.post_link.startsWith('https://twitter.com/')) {
+                    text = `<${this.post.post_link}> ${this.post.preview_link}?name=orig`;
+                } else if (this.post.post_link.startsWith('https://www.pixiv.net')) {
+                    text = `<${this.post.post_link}> https://honkai-pictures.ru/api/embed/${this.post.post_link.slice(-8)}.jpg`;
                 } else {
-                    text = `${this.post.preview_link.replace(/\?.*/, '')} <${this.post.post_link}>`;
+                    text = `<${this.post.post_link}> ${this.post.preview_link.replace(/\?.*/, '')}`;
                 }
                 navigator.clipboard.writeText(text);
-            }
         },
         pixivLink() {
             if (this.post.post_link.startsWith('https://www.pixiv.net/')) {
                 axios({
-                    method: 'post',
-                    url: '/get_image',
-                    data: this.post.preview_link,
+                    method: 'get',
+                    url: `/embed/${this.post.post_link.slice(-8)}.jpg`,
                     responseType: 'blob',
                 }).then(res => {
                     let img = document.querySelector(`.preview_link[src="${this.post.preview_link}"]`)
