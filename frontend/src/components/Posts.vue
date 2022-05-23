@@ -1,6 +1,6 @@
 <template>
     <a @click="toClipboard" class="image" :href="post.post_link">
-        <img :src="post.preview_link">
+        <img class="preview_link" :src="post.preview_link">
         <div class="counter_wrapper">
             <div class="images_count">
                 {{ post.images_number }}
@@ -17,6 +17,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
     name: 'PostsComponent',
     props: {
@@ -32,7 +34,7 @@ export default {
     },
     methods: {
         toClipboard(e) {
-            if (this.post.source !== 'pixiv') {            
+            if (this.post.source !== 'pixiv') {
                 e.preventDefault();
                 let text = '';
                 if (this.post.source === 'twitter') {
@@ -43,6 +45,24 @@ export default {
                 navigator.clipboard.writeText(text);
             }
         },
+        pixivLink() {
+            if (this.post.post_link.startsWith('https://www.pixiv.net/')) {
+                axios({
+                    method: 'post',
+                    url: '/get_image',
+                    data: this.post.preview_link,
+                    responseType: 'blob',
+                }).then(res => {
+                    let img = document.querySelector(`.preview_link[src="${this.post.preview_link}"]`)
+                    let imageType = this.post.preview_link.slice(-3);
+                    let file = new File([res.data], { type: `image/${imageType}` });
+                    img.src = URL.createObjectURL(file);
+                });
+            }
+        },
+    },
+    beforeMount() {
+        this.pixivLink();
     },
 };
 </script>

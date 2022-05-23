@@ -1,7 +1,7 @@
 from datetime import timedelta, datetime
 from typing import Generator, Literal
 
-from fastapi import Depends, FastAPI, HTTPException, Response, Request
+from fastapi import Body, Depends, FastAPI, HTTPException, Response, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi_utils.tasks import repeat_every
@@ -9,13 +9,15 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 from db.database import SessionLocal, engine, Base
-from db.schemas import PostScheme, Token, UserOut, UserFront
+from db.schemas import PostScheme, UserOut, UserFront
 from exceptions import credentials_exception
 from scrapers.scrapers import *
 from security import create_access_token, verify_password, verify_token
 from settings import settings
 from utils.crud import users
 from utils.crud.posts import get_posts
+from utils.image import get_image
+
 
 
 Base.metadata.create_all(bind=engine) # type: ignore
@@ -148,6 +150,11 @@ def start_update(db: Session = Depends(get_db)):
         return {"message": "Update already in progress"}
     update(db)
     return {'message': 'Updated'}
+
+@app.post('/api/get_image', response_class=Response)
+def load_image(link: str = Body(default=None)):
+    image = get_image(link)
+    return Response(content=image, media_type="image/png")
 
 @app.get("/api/{route}", response_model=list[PostScheme])
 def api_posts(
