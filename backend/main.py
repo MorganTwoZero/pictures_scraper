@@ -15,9 +15,9 @@ Base.metadata.create_all(bind=engine) # type: ignore
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/token")
 
 app = FastAPI()
-app.include_router(embed_router)
 app.include_router(site_router)
 app.include_router(users_router)
+app.include_router(embed_router)
 
 client = TestClient(app)
 

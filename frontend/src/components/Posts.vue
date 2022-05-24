@@ -39,7 +39,7 @@ export default {
                 if (this.post.post_link.startsWith('https://twitter.com/')) {
                     text = `<${this.post.post_link}> ${this.post.preview_link}?name=orig`;
                 } else if (this.post.post_link.startsWith('https://www.pixiv.net')) {
-                    text = `<${this.post.post_link}> https://honkai-pictures.ru/embed/${this.post.post_link.slice(-8)}`;
+                    text = `<${this.post.post_link}> https://honkai-pictures.ru/api/embed/${this.post.post_link.slice(-8)}`;
                 } else {
                     text = `<${this.post.post_link}> ${this.post.preview_link.replace(/\?.*/, '')}`;
                 }

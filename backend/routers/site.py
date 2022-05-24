@@ -10,7 +10,7 @@ from scrapers.imports import *
 from utils.crud.posts import get_posts
 
 router = APIRouter(
-    prefix="/api",
+    prefix='/api',
     tags=["site"],
 )
 
@@ -40,10 +40,21 @@ def start_update(db: Session = Depends(get_db)):
     update(db)
     return {'message': 'Updated'}
 
-@router.get("/{route}", response_model=list[PostScheme])
+@router.get("/honkai", response_model=list[PostScheme])
 def api_posts(
     db: Session = Depends(get_db), 
-    route: Literal['honkai', 'homeline'] = 'honkai', 
+    route = 'honkai', 
+    page: int = 1, 
+    offset: int = 20
+    ):
+
+    posts = get_posts(db, page, offset, route)
+    return posts
+
+@router.get("/homeline", response_model=list[PostScheme])
+def api_posts(
+    db: Session = Depends(get_db), 
+    route = 'homeline', 
     page: int = 1, 
     offset: int = 20
     ):
