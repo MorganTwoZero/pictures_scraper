@@ -1,5 +1,6 @@
 import requests
 import ast
+import re
 
 from fastapi import HTTPException
 
@@ -21,6 +22,6 @@ def request_image(post_id: int, big: bool = False):
         else:
             img_url = post['manga_a'][0]['url_big']
     else:
-        img_url = post['url']
+        img_url = re.sub(r'.*/img-master', 'https://i.pximg.net/img-master', post['url'])
     img = requests.get(img_url, headers=PIXIV_HEADER).content
     return img
