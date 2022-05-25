@@ -1,18 +1,14 @@
-import requests
-import ast
 import re
 
 from fastapi import HTTPException
 
-from settings import settings
+from utils.request import pixiv_proxy
 
 
-PIXIV_HEADER: dict = ast.literal_eval(settings.PIXIV_HEADER)
-PIXIV_HEADER.update({'Referer': 'https://www.pixiv.net/'})
-
-def request_image(post_id: int, big: bool = False):
+async def pixiv_proxy_image(post_id: int, big: bool = False):
     url = 'https://www.pixiv.net/touch/ajax/illust/details?illust_id=' + str(post_id)
-    post = requests.get(url, headers=PIXIV_HEADER).json().get('body')
+    post = await pixiv_proxy(url)
+    post = post.json().get('body')
     if not 'illust_details' in post:
         raise HTTPException(status_code=404, detail="Post not found")
     post = post.get('illust_details')
@@ -23,5 +19,6 @@ def request_image(post_id: int, big: bool = False):
             img_url = post['manga_a'][0]['url_big']
     else:
         img_url = re.sub(r'.*/img-master', 'https://i.pximg.net/img-master', post['url'])
-    img = requests.get(img_url, headers=PIXIV_HEADER).content
+    img = await pixiv_proxy(img_url)
+    img = img.content
     return img

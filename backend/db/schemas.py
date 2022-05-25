@@ -16,10 +16,6 @@ class PostScheme(BaseModel):
     class Config:
         orm_mode = True
 
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-
 class User(BaseModel):
     username: str
     
@@ -37,7 +33,9 @@ class UserInDB(User):
 
 class Settings(BaseModel):
     username: str
-    authors: str
-    tags: str
-    pixiv_header: str
     twitter_header: str
+    blacklist_authors: str
+    blacklist_tags: str
+
+    class Config:
+        orm_mode = True

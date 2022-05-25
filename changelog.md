@@ -14,4 +14,7 @@ Added user system on the frontend.
 Routes guard. Token cookie auth. Display pixiv images without referer extentions. Pixiv embeds. Dropdown collapse.
 
 # 24.05.2022
-Separated routers. Dropped "/api" in embed url
+Separated routers. Dropped "/api" in embed url.
+
+# 25.05.2022
+Async requests. Returned "/api" in embed url

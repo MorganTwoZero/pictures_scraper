@@ -18,19 +18,6 @@ class Post(Base): # type: ignore
         default=None)
     honkai = Column(Boolean)
 
-class TwitterPost(Base): # type: ignore
-    __tablename__ = "twitter_posts"
-
-    id = Column(Integer, primary_key=True, index=True, unique=True)
-    preview_link = Column(String, nullable=True, default=None)
-    images_number = Column(Integer)
-    created = Column(DateTime, index=True)
-    author = Column(String, nullable=True, default=None)
-    author_link = Column(String, nullable=True, default=None)
-    author_profile_image = Column(String, nullable=True, 
-        default=None)
-
-
 class User(Base): # type: ignore
     __tablename__ = "users"
 
