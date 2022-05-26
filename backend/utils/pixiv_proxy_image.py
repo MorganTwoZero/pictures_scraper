@@ -11,10 +11,10 @@ async def pixiv_proxy_image(pic_id: str, big: bool):
     Get post id and pic num.'''
     if pic_id[-3:-1] == '_p':
         pixiv_id = pic_id[:-3]
-        pic_num = pic_id[-1]
+        pic_num = int(pic_id[-1])
     else:
         pixiv_id = pic_id
-        pic_num = 0
+        pic_num = int(0)
     
     url = 'https://www.pixiv.net/touch/ajax/illust/details?illust_id=' + pixiv_id
     
