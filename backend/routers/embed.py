@@ -1,21 +1,22 @@
-from fastapi import APIRouter, Response, Request
+from fastapi import APIRouter, Request, Response
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
-
 from utils.pixiv_proxy_image import pixiv_proxy_image
-
 
 router = APIRouter(
     prefix="/api/embed",
     tags=["embed"],
 )
 
-discord_useragent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 11.6; rv:92.0) Gecko/20100101 Firefox/92.0'
+discord_useragent = [
+    'Mozilla/5.0 (compatible; Discordbot/2.0; +https://discordapp.com)',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 11.6; rv:92.0) Gecko/20100101 Firefox/92.0',
+    ]
 
 @router.get('/{post_id}.jpg', response_class=Response)
 async def img(request: Request, post_id: int, big: bool = True):
     '''Check if the user is accessing the embed from a discord client, 
     if so, send small image, else send big image'''
-    if request.headers.get('user-agent') == discord_useragent:
+    if request.headers.get('user-agent') in discord_useragent:
         big = False
     image = await pixiv_proxy_image(post_id, big)
     return Response(content=image, media_type="image")
@@ -39,7 +40,7 @@ def json(post_id: int):
 def embed(request: Request, post_id: int):
     '''Check if the user is accessing the embed from a discord client,
     if not (i.e. directly from a browser) then redirect to the .jpg version'''
-    if request.headers.get('user-agent') != discord_useragent:
+    if request.headers.get('user-agent') not in discord_useragent:
         return RedirectResponse(url='https://honkai-pictures.ru/api/embed/{post_id}.jpg'.format(post_id=post_id))
 
     html = '''
