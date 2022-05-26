@@ -18,3 +18,6 @@ Separated routers. Dropped "/api" in embed url.
 
 # 25.05.2022
 Async requests. Returned "/api" in embed url
+
+# 26.05.2022
+Adjusted pixiv embeds 'big' logic.

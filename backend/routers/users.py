@@ -83,6 +83,6 @@ async def read_users_me(
 
     user = users.get_user_by_username(username, db)
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=204, detail="User not found")
         
     return user
