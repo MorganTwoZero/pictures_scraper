@@ -9,8 +9,7 @@ from utils.crud.posts import save_to_db
 TIMEZONE = settings.TIMEZONE
 
 def twitter_save(db, r):
-    try:
-        r = list(r.json()['globalObjects']['tweets'].values())
+    if r:
 
         for item in r:
             if 'media' in item['entities']:
@@ -31,5 +30,3 @@ def twitter_save(db, r):
                         honkai=True,
                         ),
                     db)
-    except:
-        print('Failed to get twitter')

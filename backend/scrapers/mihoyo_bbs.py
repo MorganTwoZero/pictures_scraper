@@ -12,11 +12,10 @@ POST_PREVIEW_TEMPLATE = '?x-oss-process=image/resize,s_500/quality,q_80/auto-ori
 AUTHOR_LINK_TEMPLATE = 'https://bbs.mihoyo.com/bh3/accountCenter/postList?id='
 
 
-def mihoyo_bbs_save(db, r):
-    try:
-        result = r.json()['data']['list']
+def mihoyo_bbs_save(db, posts):
+    if posts:
 
-        for post in result:
+        for post in posts:
             save_to_db(PostScheme(
                 post_link=f"{POST_LINK_TEMPLATE + str(post['post']['post_id'])}",
                 preview_link=f"{post['post']['cover'] + POST_PREVIEW_TEMPLATE}",              
@@ -29,5 +28,3 @@ def mihoyo_bbs_save(db, r):
                 honkai=True,
                     ),
                 db)
-    except:
-        print('Failed to get mihoyo bbs')

@@ -9,9 +9,10 @@ from utils.crud.posts import save_to_db
 
 TIMEZONE = settings.TIMEZONE
 
-def lofter_save(db, r): 
-    try:           
-        soup = BeautifulSoup(r.text, 'html.parser')
+def lofter_save(db, html): 
+    if html:
+
+        soup = BeautifulSoup(html, 'html.parser')
 
         for item in soup.find_all(class_='m-mlist'):
             if item.find(class_='imgc') is not None:
@@ -27,5 +28,3 @@ def lofter_save(db, r):
                     honkai=True,
                     ),
                 db)
-    except:
-        print('Failed to get lofter')

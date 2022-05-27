@@ -13,11 +13,10 @@ POST_LINK_TEMPLATE = 'https://www.pixiv.net/en/artworks/'
 AUTHOR_LINK_TEMPLATE = 'https://www.pixiv.net/en/users/'
 
 
-def pixiv_save(db, r):
-    try:
-        result = r.json()['body']['illusts']        
+def pixiv_save(db, posts):
+    if posts:      
 
-        for post in result:
+        for post in posts:
             scary_tag = any(tag in post['tags'] for tag in SCARY_TAGS)
             scary_author = post['author_details']['user_name'] in SCARY_AUTHORS
             if not scary_tag and not scary_author:
@@ -32,5 +31,3 @@ def pixiv_save(db, r):
                     honkai=True,
                     ),
                 db)
-    except:
-        print('Failed to get pixiv')

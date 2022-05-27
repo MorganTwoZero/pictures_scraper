@@ -7,9 +7,10 @@ from utils.crud.posts import save_to_db
 
 TIMEZONE = settings.TIMEZONE
 
-def homeline_save(db, r):
-    try:
-        for item in r.json():
+def homeline_save(db, posts):
+    if posts:
+        
+        for item in posts:
             if 'media' in item['entities']:
                 save_to_db(PostScheme(        
                     # -7 due to 'photo/1' in link        
@@ -25,5 +26,3 @@ def homeline_save(db, r):
                     honkai=False
                     ),
                 db)
-    except:
-        print('Failed to get homeline')

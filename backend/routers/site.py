@@ -19,15 +19,16 @@ async def update(db):
     update_pending = True
     print('Start update ' + str(datetime.now()))
     posts = await request()
-    homeline_save(db, posts[2])
+    homeline_save(db, posts.twitter_homeline)
     print('Homeline updated')
-    twitter_save(db, posts[1])
+    twitter_save(db, posts.twitter_honkai)
     print('Twitter updated')
-    pixiv_save(db, posts[0])
+    pixiv_save(db, posts.pixiv)
     print('Pixiv updated')
-    mihoyo_bbs_save(db, posts[3])
+    mihoyo_bbs_save(db, posts.bbs_mihoyo)
     print('Mihoyo updated')
-    lofter_save(db, posts[4])
+    for html in posts.lofter:
+        lofter_save(db, html)
     print('Lofter updated')
     print('End update ' + str(datetime.now()))
     update_pending = False

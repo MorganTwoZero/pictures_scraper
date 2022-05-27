@@ -32,10 +32,17 @@ class UserInDB(User):
     hashed_password: str
 
 class Settings(BaseModel):
-    username: str
-    twitter_header: str
-    blacklist_authors: str
-    blacklist_tags: str
+    user: str
+    twitter_header: str | None = None
+    authors_blacklist: str
+    tags_blacklist: str
 
     class Config:
         orm_mode = True
+
+class RequestResults(BaseModel):
+    pixiv: list[dict] | None
+    twitter_honkai: list[dict] | None
+    twitter_homeline: list[dict] | None
+    bbs_mihoyo: list[dict] | None
+    lofter: list[str | None]

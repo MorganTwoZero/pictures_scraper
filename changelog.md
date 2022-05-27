@@ -21,3 +21,6 @@ Async requests. Returned "/api" in embed url
 
 # 26.05.2022
 Adjusted pixiv embeds 'big' logic. Added feature to request pic with arbitrary number.
+
+# 27.05.2022
+Type validations in request.py

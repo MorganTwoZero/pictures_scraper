@@ -4,6 +4,7 @@ import asyncio
 import httpx
 
 from settings import settings
+from db.schemas import RequestResults
 
 
 PIXIV_URL: str = 'https://www.pixiv.net/touch/ajax/search/illusts?include_meta=1&type=illust_and_ugoira&word=崩坏3rd OR 崩壊3rd OR 崩坏3 OR 崩壞3rd OR honkaiimpact3rd OR 붕괴3 OR 붕괴3rd OR 崩坏学园 OR 崩壊学園 OR 崩坏 OR 崩坏三 OR リタ・ロスヴァイセ OR 琪亚娜 OR 符华 OR フカ OR 希儿&s_mode=s_tag_full&lang=en'
@@ -23,23 +24,43 @@ for tag in LOFTER_TAGS.split(' '):
     urls.append(url)
     headers.append('')
 
-async def _get(client, url, header):
-    res = await client.get(url, headers=header)
+async def _get(client, url, header) -> httpx.Response | None:
+    try:
+        res = await client.get(url, headers=header, timeout=20)
+    except httpx.TimeoutException:
+        print('timeout', url)
+        return None
     return res
 
-async def request():
+async def request() -> RequestResults:
 
-    async with httpx.AsyncClient() as client:
+    urls = [PIXIV_URL, TWITTER_SEARCH_URL, TWITTER_HOME_URL, MIHOYO_URL]
+    headers = [PIXIV_HEADER, TWITTER_HEADER, TWITTER_HEADER, '']
+    for tag in LOFTER_TAGS.split(' '):
+        url = LOFTER_URL + tag
+        urls.append(url)
+        headers.append('')
 
-        tasks = []
-        for i in range(len(urls)):
-            url = urls[i]
-            header = headers[i]
-            tasks.append(asyncio.ensure_future(_get(client, url, header)))
+    client = httpx.AsyncClient()
 
-        original_res = await asyncio.gather(*tasks)
-        
-        return original_res
+    tasks = []
+    for i in range(len(urls)):
+        url = urls[i]
+        header = headers[i]
+        tasks.append(asyncio.ensure_future(_get(client, url, header)))
+
+    r: list[httpx.Response] = await asyncio.gather(*tasks) # type: ignore
+    await client.aclose()
+
+    results = RequestResults(
+        pixiv= r[0].json()['body']['illusts'],
+        twitter_honkai= list(r[1].json()['globalObjects']['tweets'].values()),
+        twitter_homeline= r[2].json(),
+        bbs_mihoyo= r[3].json()['data']['list'],
+        lofter= [r[i].text for i in range(4, len(r))]
+    )
+    
+    return results
 
 async def pixiv_proxy(url):
     header=PIXIV_HEADER
