@@ -37,7 +37,6 @@ async def update(db: Session):
     print('Lofter updated')
     print('End update ' + str(datetime.now()))
 
-
 @router.get("/update")
 async def start_update(db: Session = Depends(get_db)):
     await update(db)
