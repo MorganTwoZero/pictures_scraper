@@ -4,7 +4,8 @@ from fastapi.security import OAuth2PasswordBearer
 from fastapi.testclient import TestClient
 from fastapi_utils.tasks import repeat_every
 
-from db.database import Base, engine
+from db.database import engine
+from db.base_class import Base
 from parsers.imports import *
 from routers.imports import *
 from settings import settings
