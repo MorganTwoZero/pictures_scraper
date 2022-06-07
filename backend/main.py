@@ -5,10 +5,9 @@ from fastapi.testclient import TestClient
 from fastapi_utils.tasks import repeat_every
 
 from db.database import Base, engine
-from routers.imports import *
 from parsers.imports import *
+from routers.imports import *
 from settings import settings
-
 
 Base.metadata.create_all(bind=engine) # type: ignore
 
@@ -18,8 +17,6 @@ app = FastAPI()
 app.include_router(site_router)
 app.include_router(users_router)
 app.include_router(embed_router)
-
-client = TestClient(app)
 
 app.add_middleware(
     CORSMiddleware,
@@ -33,9 +30,10 @@ app.add_middleware(
 
 @app.on_event("startup")
 @repeat_every(seconds=60 * settings.UPDATE_TIMEOUT)
-def test_update():
+def fill_db_on_startup():
     '''
     Ugly hack to update on startup and timeout
     because of the way Depends() works
     '''
+    client = TestClient(app)
     client.get("/api/update")

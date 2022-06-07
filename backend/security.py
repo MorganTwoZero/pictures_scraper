@@ -1,9 +1,11 @@
 from datetime import datetime, timedelta
 
+from fastapi import Request, HTTPException
 from passlib.context import CryptContext
 from jose import JWTError, jwt
 
 from db.schemas import UserInDB
+import utils.crud.users as users
 from settings import settings
 from exceptions import credentials_exception
 
@@ -38,3 +40,18 @@ def hash_password(password: str) -> str:
 
 def verify_password(plain_password: str, user: UserInDB) -> bool:
     return pwd_context.verify(plain_password, user.hashed_password)
+
+def get_current_user(request: Request, db) -> UserInDB:
+    token = request.cookies.get('Authorization')
+    if not token:
+        raise HTTPException(status_code=204, detail="User not found")
+
+    username = verify_token(token)
+    if not username:
+        raise HTTPException(status_code=400, detail="Invalid token")
+
+    user = users.get_user_by_username(username, db)
+    if not user:
+        raise HTTPException(status_code=204, detail="User not found")
+        
+    return user

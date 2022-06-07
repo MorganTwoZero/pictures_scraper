@@ -4,10 +4,12 @@ from fastapi import APIRouter, Depends, HTTPException, Response, Request
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
-from db.schemas import UserOut, UserFront
+from db.schemas import UserFront, Settings as SettingsScheme
 from dependency import get_db
 from exceptions import credentials_exception
-from security import create_access_token, verify_password, verify_token
+from security import create_access_token, \
+                    verify_password, \
+                    get_current_user
 from settings import settings
 from utils.crud import users
 
@@ -69,20 +71,27 @@ async def logout(response: Response):
         ) 
     return {'message': 'Logged out'}
 
-@router.get("/user", response_model=UserOut)
-async def read_users_me(
+@router.get("/user", response_model=SettingsScheme)
+async def get_settings(
     request: Request,
     db: Session = Depends(get_db)
     ):
 
-    token = request.cookies.get('Authorization')
+    user = get_current_user(request, db)
+    settings = users.get_settings(user.username, db)
+    return settings
+    
+@router.post("/settings")
+def update_settings(
+    settings_form: SettingsScheme,
+    request: Request,
+    db: Session = Depends(get_db)
+    ):
 
-    username = verify_token(token)
-    if not username:
-        raise HTTPException(status_code=400, detail="Invalid token")
-
-    user = users.get_user_by_username(username, db)
+    user = get_current_user(request, db)
     if not user:
-        raise HTTPException(status_code=204, detail="User not found")
-        
-    return user
+        raise HTTPException(status_code=400, detail="User not found")
+
+    users.update_settings(settings_form, db)
+
+    return {'message': 'Settings updated successfully'}
