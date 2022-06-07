@@ -12,7 +12,7 @@
             <router-link @click="refresh" class="nav-link" to="/honkai">Honkai</router-link>
           </li>
           <li class="nav-item">
-            <router-link @click="refresh" class="nav-link" to="/homeline">Homeline</router-link>
+            <router-link @click="refresh" class="nav-link" to="/myfeed">My feed</router-link>
           </li>
           <li class="nav-item">
             <a @click="$emit('update')" class="nav-link">Update</a>
@@ -47,7 +47,7 @@ const store = useStore()
 const { isAuthenticated, User } = storeToRefs(store)
 
 function refresh(e) {
-  if (e.target.getAttribute('href').slice(1) == router.currentRoute.value.fullPath) {
+  if (e.target.getAttribute('href') == router.currentRoute.value.fullPath) {
     location.reload();
   }
 }

@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import { useStore } from '@/store'
 
 import PostsView from './views/PostsView.vue'
@@ -16,10 +16,10 @@ const routes = [
     meta: {title: 'Honkai'},
   },
   {
-    path: '/homeline',
-    name: 'homeline',
+    path: '/myfeed',
+    name: 'myfeed',
     component: PostsView,
-    meta: {title: 'Homeline'},
+    meta: {title: 'My feed'},
   },
   {
     path: '/about',
@@ -51,11 +51,11 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(),
   routes
 })
 
-const DEFAULT_TITLE = 'Картиночки';
+const DEFAULT_TITLE = 'DEFAULT_TITLE';
 router.afterEach((to) => {
     // Use next tick to handle router history correctly
     // see: https://github.com/vuejs/vue-router/issues/914#issuecomment-384477609
