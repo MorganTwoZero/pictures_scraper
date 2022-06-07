@@ -42,7 +42,7 @@ async def start_update(db: Session = Depends(get_db)):
     await update(db)
     return {'message': 'Updated'}
 
-@router.get("/honkai", response_model=Iterable[PostScheme])
+@router.get("/honkai", response_model=Sequence[PostScheme])
 def honkai_posts(
     db: Session = Depends(get_db),
     page: int = 1, 
