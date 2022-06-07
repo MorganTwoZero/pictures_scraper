@@ -13,10 +13,7 @@ router = APIRouter(
     tags=["site"],
 )
 
-update_pending: bool = False
 async def update(db):
-    global update_pending
-    update_pending = True
     print('Start update ' + str(datetime.now()))
     posts = await request()
     homeline_save(db, posts.twitter_homeline)
@@ -31,13 +28,9 @@ async def update(db):
         lofter_save(db, html)
     print('Lofter updated')
     print('End update ' + str(datetime.now()))
-    update_pending = False
 
 @router.get("/update")
 async def start_update(db: Session = Depends(get_db)):
-    global update_pending
-    if update_pending == True:
-        return {"message": "Update already in progress"}
     await update(db)
     return {'message': 'Updated'}
 
