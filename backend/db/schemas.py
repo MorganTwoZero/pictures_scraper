@@ -11,7 +11,18 @@ class PostScheme(BaseModel):
     author_link: str
     author_profile_image: str | None = None
     created: datetime
-    honkai: bool
+
+    class Config:
+        orm_mode = True
+
+class TwitterPostScheme(BaseModel):
+    post_link: str    
+    preview_link: str
+    images_number: int = 1    
+    author: str
+    author_link: str
+    author_profile_image: str | None = None
+    created: datetime
 
     class Config:
         orm_mode = True
@@ -28,6 +39,9 @@ class UserOut(User):
 class UserFront(User):
     password: str
 
+class UserWithTwitter(User):
+    twitter_header: str
+
 class UserInDB(User):
     hashed_password: str
 
@@ -43,6 +57,5 @@ class Settings(BaseModel):
 class RequestResults(BaseModel):
     pixiv: list[dict] | None
     twitter_honkai: list[dict] | None
-    twitter_homeline: list[dict] | None
     bbs_mihoyo: list[dict] | None
     lofter: list[str | None]

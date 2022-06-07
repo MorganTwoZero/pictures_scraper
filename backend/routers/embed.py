@@ -1,3 +1,5 @@
+from functools import lru_cache
+
 from fastapi import APIRouter, Request, Response, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 
@@ -14,6 +16,7 @@ discord_useragent = [
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 11.6; rv:92.0) Gecko/20100101 Firefox/92.0',
     ]
 
+@lru_cache
 @router.get('/{pic_id}.jpg', response_class=Response)
 async def img(request: Request, pic_id: str, big: bool = True):
     '''Check if a user is accessing the embed from a discord client, 

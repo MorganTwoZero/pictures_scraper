@@ -1,10 +1,11 @@
 import ast
 import asyncio
+from typing import Iterable, Sequence
 
 import httpx
 
 from settings import settings
-from db.schemas import RequestResults
+from db.schemas import RequestResults, UserWithTwitter
 
 
 PIXIV_URL: str = 'https://www.pixiv.net/touch/ajax/search/illusts?include_meta=1&type=illust_and_ugoira&word=崩坏3rd OR 崩壊3rd OR 崩坏3 OR 崩壞3rd OR honkaiimpact3rd OR 붕괴3 OR 붕괴3rd OR 崩坏学园 OR 崩壊学園 OR 崩坏 OR 崩坏三 OR リタ・ロスヴァイセ OR 琪亚娜 OR 符华 OR フカ OR 希儿&s_mode=s_tag_full&lang=en'
@@ -13,11 +14,11 @@ TWITTER_HOME_URL: str = 'https://api.twitter.com/1.1/statuses/home_timeline.json
 MIHOYO_URL = 'https://bbs-api.mihoyo.com/post/wapi/getForumPostList?forum_id=4&gids=1&is_good=false&is_hot=false&page_size=20&sort_type=2'
 LOFTER_URL = 'https://www.lofter.com/tag/'
 LOFTER_TAGS: str = '崩坏3 符华 琪亚娜 丽塔 崩坏三 崩坏3rd 雷电芽衣'
-PIXIV_HEADER: dict = ast.literal_eval(settings.PIXIV_HEADER)
+PIXIV_HEADER: dict[str, str] = ast.literal_eval(settings.PIXIV_HEADER)
 TWITTER_HEADER = ast.literal_eval(settings.TWITTER_HEADER)
 
-urls = [PIXIV_URL, TWITTER_SEARCH_URL, TWITTER_HOME_URL, MIHOYO_URL]
-headers = [PIXIV_HEADER, TWITTER_HEADER, TWITTER_HEADER, '']
+urls = [PIXIV_URL, TWITTER_SEARCH_URL, MIHOYO_URL]
+headers = [PIXIV_HEADER, TWITTER_HEADER, '']
 
 for tag in LOFTER_TAGS.split(' '):
     url = LOFTER_URL + tag
@@ -34,13 +35,6 @@ async def _get(client, url, header) -> httpx.Response | None:
 
 async def request() -> RequestResults:
 
-    urls = [PIXIV_URL, TWITTER_SEARCH_URL, TWITTER_HOME_URL, MIHOYO_URL]
-    headers = [PIXIV_HEADER, TWITTER_HEADER, TWITTER_HEADER, '']
-    for tag in LOFTER_TAGS.split(' '):
-        url = LOFTER_URL + tag
-        urls.append(url)
-        headers.append('')
-
     client = httpx.AsyncClient()
 
     tasks = []
@@ -52,12 +46,16 @@ async def request() -> RequestResults:
     r: list[httpx.Response] = await asyncio.gather(*tasks) # type: ignore
     await client.aclose()
 
+    results = results_to_sources(r)
+
+    return results
+
+def results_to_sources(results_list: Sequence[httpx.Response]) -> RequestResults:
     results = RequestResults(
-        pixiv= r[0].json()['body']['illusts'],
-        twitter_honkai= list(r[1].json()['globalObjects']['tweets'].values()),
-        twitter_homeline= r[2].json(),
-        bbs_mihoyo= r[3].json()['data']['list'],
-        lofter= [r[i].text for i in range(4, len(r))]
+        pixiv= results_list[0].json()['body']['illusts'],
+        twitter_honkai= list(results_list[1].json()['globalObjects']['tweets'].values()),
+        bbs_mihoyo= results_list[2].json()['data']['list'],
+        lofter= [results_list[i].text for i in range(3, len(results_list))]
     )
     
     return results
@@ -68,3 +66,23 @@ async def pixiv_proxy(url):
     async with httpx.AsyncClient() as client:
         r = await _get(client, url, header)
         return r
+
+async def request_homeline_many_users(users: Iterable[UserWithTwitter]) -> Iterable[tuple[UserWithTwitter, httpx.Response]]:
+    
+    client = httpx.AsyncClient()
+
+    tasks = []
+    for user in users:
+        tasks.append(
+            asyncio.ensure_future(
+                _get(client, TWITTER_HOME_URL, ast.literal_eval(user.twitter_header))
+                )
+            )
+
+    responses: list[httpx.Response] = await asyncio.gather(*tasks) # type: ignore
+    await client.aclose()
+
+    results_and_users = []
+    for response, user in zip(responses, users):
+        results_and_users.append((user, response))
+    return results_and_users

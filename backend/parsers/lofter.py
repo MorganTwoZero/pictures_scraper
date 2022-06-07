@@ -25,6 +25,5 @@ def lofter_save(db, html):
                         int(item.find(class_='isayc').attrs['data-time'][:-3])
                         ) + timedelta(hours=TIMEZONE),
                     post_link=item.find(class_='isayc').attrs['href'],
-                    honkai=True,
                     ),
                 db)
