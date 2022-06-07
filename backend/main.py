@@ -6,7 +6,7 @@ from fastapi_utils.tasks import repeat_every
 
 from db.database import Base, engine
 from routers.imports import *
-from scrapers.imports import *
+from parsers.imports import *
 from settings import settings
 
 

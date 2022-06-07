@@ -4,7 +4,8 @@ from sqlalchemy.orm import Session
 
 from db.schemas import PostScheme
 from dependency import get_db
-from scrapers.imports import *
+from parsers.imports import *
+from parsers.homeline_many_users import homeline_save_many_users
 from utils.crud.posts import get_posts
 from utils.request import request
 
