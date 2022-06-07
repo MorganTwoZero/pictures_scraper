@@ -23,6 +23,5 @@ def homeline_save(db, posts):
                     author=f'{item["user"]["name"]}@{item["user"]["screen_name"]}',
                     author_link=f'https://twitter.com/{item["user"]["screen_name"]}',
                     author_profile_image=item['user']['profile_image_url_https'],
-                    honkai=False
                     ),
                 db)

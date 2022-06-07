@@ -27,6 +27,5 @@ def twitter_save(db, r):
                         author=sub(r'/status/.*', '', 
                             item['entities']['media'][0]['expanded_url'])[20:],
                         author_profile_image=None,
-                        honkai=True,
                         ),
                     db)

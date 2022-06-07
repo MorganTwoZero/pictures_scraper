@@ -25,6 +25,5 @@ def mihoyo_bbs_save(db, posts):
                 author=post['user']['nickname'],
                 author_link=f"{AUTHOR_LINK_TEMPLATE + str(post['user']['uid'])}",
                 author_profile_image=post['user']['avatar_url'],
-                honkai=True,
                     ),
                 db)

@@ -11,7 +11,6 @@ class PostScheme(BaseModel):
     author_link: str
     author_profile_image: str | None = None
     created: datetime
-    honkai: bool
 
     class Config:
         orm_mode = True
