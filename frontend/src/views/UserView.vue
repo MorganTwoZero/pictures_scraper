@@ -1,19 +1,8 @@
 <template>
-user={{user}}
+<SettingsComponent />
 </template>
 <script setup>
-import { onMounted } from 'vue'
-import { ref } from 'vue'
-
-import axios from 'axios'
-
-let user = ref(null)
-
-onMounted(() => {
-  axios.get('/user').then(response => {
-    user.value = response.data
-  })
-})
+import SettingsComponent from '@/components/SettingsComponent.vue'
 </script>
 <style scoped>
 * {

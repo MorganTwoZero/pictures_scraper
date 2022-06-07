@@ -46,9 +46,27 @@ export const useStore = defineStore({
                 });
             })
         },
+
         async LogOut() {
             this.$patch({ user: null })
             await axios.get('logout');
-        }
+        },
+
+        async Settings(form) {
+            return new Promise((resolve, reject) => {
+                axios({
+                    method: 'post',
+                    url: 'settings',
+                    data: form
+                }).then(response => {
+                    if (response.status == 200) {
+                        resolve();
+                    }
+                }).catch(err => {
+                    console.log(err)
+                    reject(err);
+                });
+            })
+        },
     }
 })
