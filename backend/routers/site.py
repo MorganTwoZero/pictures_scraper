@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Iterable, Sequence
+from typing import Sequence
 
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
@@ -9,7 +9,7 @@ from dependency import get_db
 from parsers.imports import *
 from utils.crud.posts import get_posts, my_feed_db_get
 from utils.request import request, request_homeline_many_users
-from utils.crud.users import get_users_with_twitter_credentials, get_user_with_twitter
+from utils.crud.users import get_all_users_with_twitter, get_user_with_twitter
 from security import get_current_user
 
 router = APIRouter(
@@ -20,7 +20,7 @@ router = APIRouter(
 async def update(db: Session):
     print('Start update ' + str(datetime.now()))
 
-    users = get_users_with_twitter_credentials(db)
+    users = get_all_users_with_twitter(db)
     posts =  await request_homeline_many_users(users)
     homeline_save_many_users(db, posts)
     print('Homeline updated')

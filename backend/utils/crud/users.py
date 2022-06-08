@@ -6,7 +6,7 @@ from db.schemas import UserFront, UserWithTwitter ,UserInDB, Settings as Setting
 from security import hash_password
 from utils.crud.base import unique
 
-def get_users_with_twitter_credentials(db: Session) -> Iterable[UserWithTwitter]:
+def get_all_users_with_twitter(db: Session) -> Iterable[UserWithTwitter]:
 
     q: Iterable[tuple[UserInDB, SettingsScheme]] = db.query(UserModel, SettingsModel).filter(
         SettingsModel.twitter_header != None,
@@ -31,8 +31,8 @@ def get_user_with_twitter(username: str, db: Session) -> UserWithTwitter:
         ).join(UserModel).first()  # type: ignore
 
     user_with_twitter: UserWithTwitter = UserWithTwitter(
-        username=user_in_db.User.username,
-        twitter_header=user_in_db.Settings.twitter_header,
+        username=user_in_db.User.username,  # type: ignore
+        twitter_header=user_in_db.Settings.twitter_header,  # type: ignore
     )
 
     return user_with_twitter
@@ -51,6 +51,7 @@ def create_user(user: UserFront, db: Session) -> UserInDB | None:
         db.add(db_user)
         db.commit()
         db.refresh(db_user)
+        
         settings = SettingsModel(
             user=user.username
             )

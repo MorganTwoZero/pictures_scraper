@@ -2,7 +2,7 @@ from typing import Iterable
 from sqlalchemy.orm import Session
 
 from db.schemas import PostScheme, TwitterPostScheme, User as UserScheme
-from db.models import Post as PostModel, TwitterFeedPost, User
+from db.models import Post as PostModel, TwitterFeedPost, User as UserModel
 from utils.crud.base import unique
 
 
@@ -30,13 +30,12 @@ def save_to_db(post: PostScheme, db: Session):
         db.refresh(db_post)
         return db_post
 
-def save_to_db_many_users(db: Session, post: TwitterPostScheme, user: UserScheme):
+def save_post_many_users(db: Session, post: TwitterPostScheme, user: UserScheme):
 
     db_post = TwitterFeedPost(**post.dict())
     
-    user_instance = db.query(User).filter(User.username == user.username).first()
-    assert user_instance
-    user = user_instance
+    #Already asserted that user is in db, so no need to check
+    user_in_db: UserModel = db.query(UserModel).filter(UserModel.username == user.username)[0]
 
     post_in_db = db.query(TwitterFeedPost).filter(TwitterFeedPost.post_link == db_post.post_link).first()
 
@@ -46,8 +45,8 @@ def save_to_db_many_users(db: Session, post: TwitterPostScheme, user: UserScheme
         db.refresh(db_post)
         return db_post
 
-    if not user in post_in_db.users:
-        post_in_db.users.append(user)
+    if not user_in_db in post_in_db.users:
+        post_in_db.users.append(user_in_db)
         db.commit()
         db.refresh(post_in_db)
         return post_in_db
