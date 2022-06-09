@@ -74,6 +74,9 @@ router.beforeEach((to, from, next) => {
   if (authRequired && !loggedIn) {
     return next('/login');
   }
+  if (authRequired && !document.cookie.includes('user')) {
+    return next('/login');
+  }
 
   next();
 })
