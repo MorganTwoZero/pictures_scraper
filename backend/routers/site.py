@@ -1,5 +1,7 @@
+import ast
 from datetime import datetime
 from typing import Sequence
+import requests
 
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
@@ -65,3 +67,19 @@ async def homeline_posts(
     if user.twitter_header:
         posts = my_feed_db_get(db, user, page, offset)
         return posts
+
+@router.get("/like")
+def like(
+    request: Request,
+    post_link: str,
+    db: Session = Depends(get_db)
+    ):
+
+    post_id: int = int(post_link[-20:-1])
+    user_in_db: UserInDB = get_current_user(request, db)
+    user = get_user_with_twitter(user_in_db.username, db)
+    r = requests.post(
+        f'https://api.twitter.com/1.1/favorites/create.json?id={post_id}', 
+        headers=ast.literal_eval(user.twitter_header)
+        )
+    return r

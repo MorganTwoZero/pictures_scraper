@@ -53,9 +53,14 @@ async def login_for_access_token(
         value=access_token, 
         httponly=True, 
         max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60, 
-        samesite='Strict',
         secure=True,
-        ) 
+        )
+    response.set_cookie(
+        key="username",
+        value=user.username,
+        max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        secure=True,
+        )
 
     return {'message': 'Authenticated'}
 
@@ -66,9 +71,15 @@ async def logout(response: Response):
         value="", 
         httponly=True, 
         max_age=0, 
-        samesite='Strict',
         secure=True,
         ) 
+
+    response.set_cookie(
+        key="username",
+        value="",
+        max_age=0,
+        secure=True,
+        )
     return {'message': 'Logged out'}
 
 @router.get("/user", response_model=SettingsScheme)

@@ -9,7 +9,18 @@
 import axios from 'axios';
 import NavBar from '@/components/NavBar.vue'
 import { useToast } from "vue-toastification";
+import { useStore } from '@/store'
+import { onBeforeUpdate } from 'vue'
 const toast = useToast()
+
+const store = useStore()
+
+onBeforeUpdate(() => {
+  if (!document.cookie.includes('username')) {
+    store.LogOut();
+  }
+})
+
 
 function update() {
   toast.info("Update requested")
