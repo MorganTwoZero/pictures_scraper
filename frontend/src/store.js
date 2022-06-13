@@ -4,7 +4,12 @@ import axios from 'axios';
 export const useStore = defineStore({
     id: 'auth',
     state: () => ({
-        user: null,
+        user: document.cookie.split('; ').forEach(cookie => {
+            const [key, value] = cookie.split('=');
+            if (key === 'username') {
+                return value;
+            }
+        })     
     }),
     persist: true,
     getters: {
