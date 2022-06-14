@@ -4,11 +4,11 @@ from fastapi.security import OAuth2PasswordBearer
 from fastapi.testclient import TestClient
 from fastapi_utils.tasks import repeat_every
 
-from backend.db.database import engine
-from backend.db.base_class import Base
-from backend.parsers.imports import *
-from backend.routers.imports import *
-from backend.settings import settings
+from db.database import engine
+from db.base_class import Base
+from parsers.imports import *
+from routers.imports import *
+from settings import settings
 
 Base.metadata.create_all(bind=engine) # type: ignore
 

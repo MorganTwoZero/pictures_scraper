@@ -3,7 +3,7 @@ from functools import lru_cache
 from fastapi import APIRouter, Request, Response, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 
-from backend.utils.pixiv_proxy_image import pixiv_proxy_image
+from utils.pixiv_proxy_image import pixiv_proxy_image
 
 
 router = APIRouter(

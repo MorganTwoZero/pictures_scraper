@@ -3,9 +3,9 @@ from typing import Iterable
 
 from httpx import Response
 
-from backend.db.schemas import TwitterPostScheme, UserWithTwitter
-from backend.settings import settings
-from backend.utils.crud.posts import save_post_many_users
+from db.schemas import TwitterPostScheme, UserWithTwitter
+from settings import settings
+from utils.crud.posts import save_post_many_users
 
 
 TIMEZONE = settings.TIMEZONE

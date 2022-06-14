@@ -2,9 +2,9 @@ from datetime import datetime, timedelta
 
 from bs4 import BeautifulSoup
 
-from backend.db.schemas import PostScheme
-from backend.settings import settings
-from backend.utils.crud.posts import save_to_db
+from db.schemas import PostScheme
+from settings import settings
+from utils.crud.posts import save_to_db
 
 
 TIMEZONE = settings.TIMEZONE

@@ -1,8 +1,8 @@
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Boolean, Table
 from sqlalchemy.orm import relationship
 
-from backend.db.base_class import Base
-from backend.settings import settings
+from db.base_class import Base
+from settings import settings
 
 
 class Post(Base): # type: ignore
