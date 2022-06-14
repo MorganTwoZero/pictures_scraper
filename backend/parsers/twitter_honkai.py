@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
 from re import sub
 
-from db.schemas import PostScheme
-from settings import settings
-from utils.crud.posts import save_to_db
+from backend.db.schemas import PostScheme
+from backend.settings import settings
+from backend.utils.crud.posts import save_to_db
 
 
 TIMEZONE = settings.TIMEZONE

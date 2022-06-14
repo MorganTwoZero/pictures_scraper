@@ -4,10 +4,10 @@ from fastapi import Request, HTTPException
 from passlib.context import CryptContext
 from jose import JWTError, jwt
 
-from db.schemas import UserInDB
-import utils.crud.users as users
-from settings import settings
-from exceptions import credentials_exception
+from backend.db.schemas import UserInDB
+import backend.utils.crud.users as users
+from backend.settings import settings
+from backend.exceptions import credentials_exception
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

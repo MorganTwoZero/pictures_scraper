@@ -1,9 +1,9 @@
 from typing import Iterable
 from sqlalchemy.orm import Session
 
-from db.schemas import PostScheme, TwitterPostScheme, User as UserScheme
-from db.models import Post as PostModel, TwitterFeedPost, User as UserModel
-from utils.crud.base import unique
+from backend.db.schemas import PostScheme, TwitterPostScheme, User as UserScheme
+from backend.db.models import Post as PostModel, TwitterFeedPost, User as UserModel
+from backend.utils.crud.base import unique
 
 
 def get_posts(db: Session, page: int, offset: int) -> Iterable[PostScheme]:

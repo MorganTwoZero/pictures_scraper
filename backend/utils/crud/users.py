@@ -1,10 +1,10 @@
 from typing import Iterable
 from sqlalchemy.orm import Session
 
-from db.models import User as UserModel, Settings as SettingsModel
-from db.schemas import UserFront, UserWithTwitter ,UserInDB, Settings as SettingsScheme
-from security import hash_password
-from utils.crud.base import unique
+from backend.db.models import User as UserModel, Settings as SettingsModel
+from backend.db.schemas import UserFront, UserWithTwitter ,UserInDB, Settings as SettingsScheme
+from backend.security import hash_password
+from backend.utils.crud.base import unique
 
 def get_all_users_with_twitter(db: Session) -> Iterable[UserWithTwitter]:
 

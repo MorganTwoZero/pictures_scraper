@@ -3,7 +3,7 @@ from pathlib import Path
 from pydantic import BaseSettings
 
 
-env_location = Path("../.env").resolve()
+env_location = Path(".env").resolve()
 
 class Settings(BaseSettings):
     SCARY_TAGS: str = '妊娠 催眠 ヒカマニ Hikakin_Mania 巨大娘 COM3D2 mikumikudance mmd R18MMD 崩坏3MMD コイカツ NTR 動圖 R-18G コイカツ! うごイラ 3D koikatsu! Koikatsu 恋活 3DCG MMD 王者荣耀 斗破苍穹 koikatsu'

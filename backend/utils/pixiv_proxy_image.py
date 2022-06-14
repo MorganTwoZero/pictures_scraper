@@ -2,7 +2,7 @@ import re
 
 from fastapi import HTTPException
 
-from utils.request import pixiv_proxy
+from backend.utils.request import pixiv_proxy
 
 
 async def pixiv_proxy_image(pic_id: str, big: bool):
