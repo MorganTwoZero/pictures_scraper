@@ -14,17 +14,18 @@
         </a>
         {{ created }}
     </div>
-    <div v-if="isLikeable">
-        <button @click="like" class="btn btn-primary">Like</button>
+
+    <div>
+    <LikeButton :post_link="post.post.post_link" />
     </div>
 </template>
 
 <script setup>
 import { onBeforeMount, computed, defineProps } from 'vue'
 
-import { useStore } from '@/store'
-
 import axios from 'axios';
+
+import LikeButton from './LikeButton.vue';
 
 const post = defineProps({
     post: {
@@ -32,24 +33,10 @@ const post = defineProps({
         required: true,
     }
 })
-const store = useStore()
-
-const isLikeable = post.post.post_link.includes('twitter.com') && store.isAuthenticated
 
 const created = computed(() => {
     return new Date(post.post.created).toLocaleTimeString('ru');
 });
-
-function like(e) {
-    e.preventDefault();
-    axios.get('/like', {
-        params: {
-            post_link: post.post.post_link
-        }
-    })
-    e.target.innerText = 'Liked'
-    e.target.blur()
-}
 
 function toClipboard(e) {
         e.preventDefault();
