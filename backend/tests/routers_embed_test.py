@@ -1,7 +1,9 @@
 import pytest
 
+from fastapi.testclient import TestClient
 
-def test_embed(client):
+
+def test_embed(client: TestClient):
     '''Test if the embed returns image'''
     response = client.get('/api/embed/99083556')
     assert response.status_code == 200
@@ -13,13 +15,13 @@ def test_embed(client):
    'msg': 'value is not a valid integer',
    'type': 'type_error.integer'}]}),
     ])
-def test_wrong_id_(client, pic_id, expected_status_code, expected_json):
+def test_wrong_id_(client: TestClient, pic_id: int, expected_status_code: int, expected_json: dict[str, str]):
     '''Test if the embed returns image'''
     response = client.get('/api/embed/{pic_id}'.format(pic_id=pic_id))
     assert response.status_code == expected_status_code
     assert response.json() == expected_json
 
-def test_embed_discord(client):
+def test_embed_discord(client: TestClient):
     '''Test if the embed returns html with json for discord'''
     response = client.get(
         '/api/embed/99083556',
@@ -30,7 +32,7 @@ def test_embed_discord(client):
     assert response.text.endswith('</html>\n    ')
     assert 'https://honkai-pictures.ru/api/embed/99083556.json' in response.text
     
-def test_embed_json(client):
+def test_embed_json(client: TestClient):
     '''Test for the correct json'''
     response = client.get(
         '/api/embed/99083556.json',
