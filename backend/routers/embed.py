@@ -72,7 +72,7 @@ def embed(request: Request, post_id: int, pic_num: int | None = None):
                 <link type="application/json+oembed" href="https://honkai-pictures.ru/api/embed/{pic_id}.json"/>
                 <meta name="twitter:card" content="summary_large_image">
                 <meta name="twitter:image" content="https://honkai-pictures.ru/api/embed/{pic_id}.jpg">
-            </head>4
+            </head>
         </html>
     '''.format(pic_id=pic_id)
 
