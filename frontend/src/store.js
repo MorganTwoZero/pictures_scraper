@@ -18,16 +18,12 @@ export const useStore = defineStore({
     },
     actions: {
         async Register(form) {
-            const data = {
-                ...form,
-            }
             return new Promise((resolve, reject) => {
                 axios({
                     method: 'post',
                     url: 'register',
-                    data: data
+                    data: `username=${form.username}&password=${form.password}`,
                 }).then(() => {
-                    this.LogIn(data);
                     resolve();
                 }).catch((err) => {
                     reject(err);

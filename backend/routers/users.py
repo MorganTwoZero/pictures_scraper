@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from fastapi import APIRouter, Depends, HTTPException, Response, Request
+from fastapi import APIRouter, Depends, Form, HTTPException, Response, Request
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
@@ -20,8 +20,13 @@ router = APIRouter(
 )
 
 @router.post('/register')
-def register(user: UserFront, db: Session = Depends(get_db)):
-
+def register(
+    username: str = Form(default=None), 
+    password: str = Form(default=None), 
+    db: Session = Depends(get_db)
+    ):
+    
+    user = UserFront(username=username, password=password)
     if users.create_user(user, db) is None:
         raise HTTPException(status_code=400, detail="User already exists")
 
