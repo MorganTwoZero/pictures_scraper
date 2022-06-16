@@ -82,4 +82,7 @@ def like(
         f'https://api.twitter.com/1.1/favorites/create.json?id={post_id}', 
         headers=ast.literal_eval(user.twitter_header)
         )
-    return {'message': 'Liked', 'status': r.status_code}
+    return {
+        'status': r.status_code,
+        'twitter_json': r.json()
+        }
