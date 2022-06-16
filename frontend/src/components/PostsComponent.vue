@@ -21,9 +21,7 @@
 </template>
 
 <script setup>
-import { onBeforeMount, computed, defineProps } from 'vue'
-
-import axios from 'axios';
+import { computed, defineProps } from 'vue'
 
 import LikeButton from './LikeButton.vue';
 
@@ -50,25 +48,6 @@ function toClipboard(e) {
         }
         navigator.clipboard.writeText(text);
 }
-
-function pixivLink() {
-    if (post.post.post_link.startsWith('https://www.pixiv.net/')) {
-        axios({
-            method: 'get',
-            url: `/embed/${post.post.post_link.slice(-8)}.jpg`,
-            responseType: 'blob',
-        }).then(res => {
-            let img = document.querySelector(`.preview_link[src="${post.post.preview_link}"]`)
-            let imageType = post.post.preview_link.slice(-3);
-            let file = new File([res.data], { type: `image/${imageType}` });
-            img.src = URL.createObjectURL(file);
-        });
-    }
-}
-
-onBeforeMount(() => {
-    pixivLink();
-})
 </script>
 
 <style scoped>
