@@ -48,7 +48,7 @@ async def start_update(db: Session = Depends(get_db)):
 def honkai_posts(
     db: Session = Depends(get_db),
     page: int = 1, 
-    offset: int = 20
+    offset: int = 5
     ):
 
     posts = get_posts(db, page, offset)
@@ -59,7 +59,7 @@ async def homeline_posts(
     request: Request,
     db: Session = Depends(get_db),
     page: int = 1, 
-    offset: int = 20
+    offset: int = 5
     ):
 
     user_in_db: UserInDB = get_current_user(request, db)

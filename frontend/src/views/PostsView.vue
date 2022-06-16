@@ -5,7 +5,7 @@
 </template>
 
 <script setup>
-import { onBeforeMount, onMounted, ref } from 'vue'
+import { onBeforeMount, ref } from 'vue'
 import router from '@/router'
 
 import PostsComponent from '@/components/PostsComponent.vue'
@@ -15,33 +15,36 @@ import axios from 'axios'
 let posts = ref([]);
 let page = 1;
 
-function getMessage() {
-  axios.get(router.currentRoute.value.fullPath + '?page=' + page + '&offset=5')
-    .then((res) => {
-      posts.value = res.data;
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+function debounce(func, wait) {
+    let timeout;
+    return () => {
+        if (timeout) {
+            clearTimeout(timeout);
+        }
+        timeout = setTimeout(func, wait)
+    }
 }
 
 function getNextPosts() {
-  window.onscroll = () => {
     if ((window.innerHeight + Math.ceil(window.scrollY)) >= document.body.offsetHeight) { //ceil for mobile
-      page++;
-      axios.get(router.currentRoute.value.fullPath + '?page=' + page + '&offset=5').then(response => {
-        posts.value = posts.value.concat(response.data);
+      axios.get(router.currentRoute.value.fullPath + '?page=' + page).then(response => {
+        posts.value = posts.value.concat(response.data);       
+        page++;
       });
     }
   }
-}
+
+window.onscroll = debounce(getNextPosts, 1000);
 
 onBeforeMount(() => {
-  getMessage();
-})
-
-onMounted(() => {
-  getNextPosts();
+  axios.get(router.currentRoute.value.fullPath + '?page=' + page)
+  .then((res) => {
+    posts.value = res.data;
+    page++;
+  })
+  .catch((error) => {
+    console.error(error);
+  });
 })
 </script>
 
