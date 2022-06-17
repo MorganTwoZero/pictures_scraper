@@ -13,6 +13,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) 
 
 from settings import settings
+from db.schemas import UserFront, UserWithTwitter, UserInDB, Settings as SettingsScheme
 from db.base_class import Base
 from dependency import get_db
 from routers.imports import *
@@ -75,10 +76,13 @@ def client(
     app.dependency_overrides[get_db] = _get_test_db
     with TestClient(app) as client:
         yield client
-
 '''
 @pytest.fixture(scope="function")
-def fill_db(db_session: Session):
-    db_session.add(Settings(user="test", twitter_header="test"))
-    db_session.add(User(username="test"))
-    db_session.commit()'''
+def create_user(client: TestClient, db_session: Session) -> Generator[UserFront, Any, None]:
+    """
+    Create a new user and return the user's username and password.
+    """
+    user = UserFront(username="test_user", password="test_password")
+    response = client.post("/users/", json=user.dict())
+    assert response.status_code == 201
+    yield user'''

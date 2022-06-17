@@ -1,7 +1,14 @@
+import pytest
+
 from fastapi.testclient import TestClient
 
 
-def test_like(client: TestClient):
+@pytest.fixture
+def fill_db_with_posts(client: TestClient):
+    client.get('/api/update')
+
+@pytest.fixture
+def create_user_with_twitter_header(client: TestClient):
 
     client.post(
         '/api/register',
@@ -24,6 +31,13 @@ def test_like(client: TestClient):
         cookies={
             'Authorization': login.cookies.get('Authorization'),
         },
+    )
+
+def test_like(create_user_with_twitter_header, client: TestClient):
+
+    login = client.post(
+        '/api/login', 
+        data={'username': 'test', 'password': 'test'}
         )
 
     like = client.get(
@@ -36,3 +50,29 @@ def test_like(client: TestClient):
     assert like.status_code == 200
     assert like.json()['status'] == 403
     assert like.json()['twitter_json']['errors'][0]['message'] == 'You have already favorited this status.'
+
+def test_honkai(fill_db_with_posts, client: TestClient):
+
+    response = client.get('/api/honkai')
+
+    assert response.status_code == 200
+    assert response.json()
+
+def test_homeline(create_user_with_twitter_header, client: TestClient):
+
+    login = client.post(
+        '/api/login', 
+        data={'username': 'test', 'password': 'test'}
+        )
+
+    client.get('/api/update')
+    client.get('/api/update')
+
+    response = client.get('/api/myfeed',
+        cookies={
+            'Authorization': login.cookies.get('Authorization')
+        }
+    )
+
+    assert response.status_code == 200
+    assert response.json()

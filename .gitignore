@@ -4,6 +4,8 @@
 test_db.db
 /certs
 
+.pytest_cache
+
 # Environments
 .env
 .venv
