@@ -76,6 +76,10 @@ def client(
     app.dependency_overrides[get_db] = _get_test_db
     with TestClient(app) as client:
         yield client
+
+@pytest.fixture(scope="module")
+def vcr_config():
+    return {"record_mode": "once"}
 '''
 @pytest.fixture(scope="function")
 def create_user(client: TestClient, db_session: Session) -> Generator[UserFront, Any, None]:

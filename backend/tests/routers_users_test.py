@@ -1,6 +1,11 @@
+import pytest
+
 from fastapi.testclient import TestClient
 
+from settings import settings
 
+
+@pytest.mark.vcr
 def test_register(client: TestClient):
 
     register = client.post(
@@ -10,6 +15,7 @@ def test_register(client: TestClient):
 
     assert register.status_code == 200
 
+@pytest.mark.vcr
 def test_login(client: TestClient):
 
     client.post(
@@ -24,11 +30,12 @@ def test_login(client: TestClient):
 
     assert login.status_code == 200
 
+@pytest.mark.vcr
 def test_settings(client: TestClient):
 
     settings_json = {
             'user': 'test',
-            'twitter_header': "{'cookie': 'auth_token=32f0ea53e854116ac76a61b5f056f62cc085894c; ct0=99564d182d20e3f98dca1a08782829a0ac2760d03eb807f5fd248ea319fa3fc5a25eb19ba72f6149a0716efa51b580fcc1aebf9afcc8fa2b6e761ebc4b017584ac5a2d09e0a9a6b4ac801b597b4286e2', 'authorization': 'Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA', 'x-csrf-token': '99564d182d20e3f98dca1a08782829a0ac2760d03eb807f5fd248ea319fa3fc5a25eb19ba72f6149a0716efa51b580fcc1aebf9afcc8fa2b6e761ebc4b017584ac5a2d09e0a9a6b4ac801b597b4286e2'}",
+            'twitter_header': settings.TWITTER_HEADER,
             'authors_blacklist': '1',
             'tags_blacklist': '1',
         }
@@ -43,7 +50,7 @@ def test_settings(client: TestClient):
         data={'username': 'test', 'password': 'test'}
         )
 
-    settings = client.post(
+    settings_response = client.post(
         'http://localhost:8000/api/settings', 
         json=settings_json, 
         cookies={
@@ -51,14 +58,15 @@ def test_settings(client: TestClient):
         },
         )
 
-    assert settings.status_code == 200
-    assert settings.json()['message'] == 'Settings updated successfully'
+    assert settings_response.status_code == 200
+    assert settings_response.json()['message'] == 'Settings updated successfully'
 
+@pytest.mark.vcr
 def test_saved_settings(client: TestClient):
 
     settings_json = {
             'user': 'test',
-            'twitter_header': "{'cookie': 'auth_token=32f0ea53e854116ac76a61b5f056f62cc085894c; ct0=99564d182d20e3f98dca1a08782829a0ac2760d03eb807f5fd248ea319fa3fc5a25eb19ba72f6149a0716efa51b580fcc1aebf9afcc8fa2b6e761ebc4b017584ac5a2d09e0a9a6b4ac801b597b4286e2', 'authorization': 'Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA', 'x-csrf-token': '99564d182d20e3f98dca1a08782829a0ac2760d03eb807f5fd248ea319fa3fc5a25eb19ba72f6149a0716efa51b580fcc1aebf9afcc8fa2b6e761ebc4b017584ac5a2d09e0a9a6b4ac801b597b4286e2'}",
+            'twitter_header': settings.TWITTER_HEADER,
             'authors_blacklist': '1',
             'tags_blacklist': '1',
         }

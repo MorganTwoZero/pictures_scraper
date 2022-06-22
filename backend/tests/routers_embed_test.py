@@ -3,24 +3,29 @@ import pytest
 from fastapi.testclient import TestClient
 
 
+@pytest.mark.vcr
 def test_embed(client: TestClient):
     '''Test if the embed returns image'''
     response = client.get('/api/embed/99083556')
     assert response.status_code == 200
     assert response.headers['content-type'] == 'image'
 
+@pytest.mark.vcr
 @pytest.mark.parametrize('pic_id, expected_status_code, expected_json', [
     ('990835560', 200, {'error': ''}),
     ('9908355q', 422, {'detail': [{'loc': ['path', 'post_id'],
    'msg': 'value is not a valid integer',
    'type': 'type_error.integer'}]}),
     ])
+
+@pytest.mark.vcr
 def test_wrong_id_(client: TestClient, pic_id: int, expected_status_code: int, expected_json: dict[str, str]):
     '''Test if the embed returns image'''
     response = client.get('/api/embed/{pic_id}'.format(pic_id=pic_id))
     assert response.status_code == expected_status_code
     assert response.json() == expected_json
 
+@pytest.mark.vcr
 def test_embed_discord(client: TestClient):
     '''Test if the embed returns html with json for discord'''
     response = client.get(
@@ -32,6 +37,7 @@ def test_embed_discord(client: TestClient):
     assert response.text.endswith('</html>\n    ')
     assert 'https://honkai-pictures.ru/api/embed/99083556.json' in response.text
     
+@pytest.mark.vcr
 def test_embed_json(client: TestClient):
     '''Test for the correct json'''
     response = client.get(

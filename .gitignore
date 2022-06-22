@@ -5,6 +5,7 @@ test_db.db
 /certs
 
 .pytest_cache
+cassettes
 
 # Environments
 .env
