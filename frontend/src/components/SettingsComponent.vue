@@ -14,6 +14,12 @@
         <div>
           <label for="twitter_header">Twitter header:</label>
           <input type="text" name="twitter_header" v-model="form.twitter_header">
+          <div>
+            Example:
+              {'cookie': 'auth_token=269bcbc4...6f168; ct0=bd58...e66', 'authorization': 'Bearer AAA...nhjdP0', 'x-csrf-token': 'bd58...e66'}
+              <br>
+              check your .json xhr request in devtools on twitter
+          </div>
         </div>
         <button type="submit">Submit</button>
       </form>
