@@ -79,7 +79,11 @@ def client(
 
 @pytest.fixture(scope="module")
 def vcr_config():
-    return {"record_mode": "once"}
+    return {
+        "record_mode": "once",
+        "filter_headers": ["Authorization"],
+        "ignore_localhost": True,
+        }
 '''
 @pytest.fixture(scope="function")
 def create_user(client: TestClient, db_session: Session) -> Generator[UserFront, Any, None]:

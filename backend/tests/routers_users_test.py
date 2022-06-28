@@ -1,11 +1,8 @@
-import pytest
-
 from fastapi.testclient import TestClient
 
 from settings import settings
 
 
-@pytest.mark.vcr
 def test_register(client: TestClient):
 
     register = client.post(
@@ -15,7 +12,6 @@ def test_register(client: TestClient):
 
     assert register.status_code == 200
 
-@pytest.mark.vcr
 def test_login(client: TestClient):
 
     client.post(
@@ -30,7 +26,6 @@ def test_login(client: TestClient):
 
     assert login.status_code == 200
 
-@pytest.mark.vcr
 def test_settings(client: TestClient):
 
     settings_json = {
@@ -61,7 +56,6 @@ def test_settings(client: TestClient):
     assert settings_response.status_code == 200
     assert settings_response.json()['message'] == 'Settings updated successfully'
 
-@pytest.mark.vcr
 def test_saved_settings(client: TestClient):
 
     settings_json = {
