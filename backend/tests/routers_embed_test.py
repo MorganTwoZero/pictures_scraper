@@ -19,7 +19,7 @@ def test_embed(client: TestClient):
     ])
 
 @pytest.mark.vcr
-def test_wrong_id_(client: TestClient, pic_id: int, expected_status_code: int, expected_json: dict[str, str]):
+def test_embed_wrong_id(client: TestClient, pic_id: int, expected_status_code: int, expected_json: dict[str, str]):
     '''Test if the embed returns image'''
     response = client.get('/api/embed/{pic_id}'.format(pic_id=pic_id))
     assert response.status_code == expected_status_code
