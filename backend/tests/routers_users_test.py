@@ -1,7 +1,17 @@
+import pytest
+
 from fastapi.testclient import TestClient
+from pydantic.error_wrappers import ValidationError
 
 from settings import settings
 
+
+@pytest.fixture
+def create_user(client: TestClient):
+    client.post(
+        '/api/register', 
+        data={'username': 'test', 'password': 'test'}
+        )
 
 def test_register(client: TestClient):
 
@@ -12,12 +22,37 @@ def test_register(client: TestClient):
 
     assert register.status_code == 200
 
-def test_login(client: TestClient):
+def test_register_empty_password(client: TestClient):
+
+    with pytest.raises(ValidationError) as e:
+        client.post(
+            '/api/register', 
+            data={'username': 'test', 'password': ''}
+            )
+
+def test_register_max_length(client: TestClient):
+
+    register = client.post(
+        '/api/register', 
+        data={'username': 'test', 'password': 'x'*100}
+    )
+
+    assert register.status_code == 422
+        
+def test_register_existing_user(client: TestClient):
 
     client.post(
-        '/api/register',
+        '/api/register', 
         data={'username': 'test', 'password': 'test'}
-        )
+    )    
+    register = client.post(
+        '/api/register', 
+        data={'username': 'test', 'password': 'test'}
+    )
+
+    assert register.status_code == 400
+
+def test_login(create_user, client: TestClient):
 
     login = client.post(
         '/api/login', 
@@ -25,6 +60,24 @@ def test_login(client: TestClient):
         )
 
     assert login.status_code == 200
+
+def test_login_max_length(create_user, client: TestClient):
+
+    login = client.post(
+        '/api/login', 
+        data={'username': 'test', 'password': 'x'*100}
+    )
+
+    assert login.status_code == 422
+
+def test_login_wrong_password(create_user, client: TestClient):
+
+    login = client.post(
+        '/api/login', 
+        data={'username': 'test', 'password': 'wrong_test'}
+    )
+
+    assert login.status_code == 401
 
 def test_settings(client: TestClient):
 
