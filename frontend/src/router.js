@@ -66,7 +66,7 @@ export default router
 
 router.beforeEach((to, from, next) => {
   // redirect to login page if not logged in and trying to access a restricted page
-  const publicPages = ['/user'];
+  const publicPages = ['/user', '/myfeed'];
   const authRequired = publicPages.includes(to.path);
   const store = useStore();
   const loggedIn = store.isAuthenticated;
