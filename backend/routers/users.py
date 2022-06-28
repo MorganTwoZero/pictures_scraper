@@ -21,8 +21,8 @@ router = APIRouter(
 
 @router.post('/register')
 def register(
-    username: str = Form(default=None), 
-    password: str = Form(default=None), 
+    username: str = Form(default=None, max_length=50), 
+    password: str = Form(default=None, max_length=50), 
     db: Session = Depends(get_db)
     ):
     
@@ -36,15 +36,16 @@ def register(
 @router.post("/login")
 async def login_for_access_token(
     response: Response,
-    form_data: OAuth2PasswordRequestForm = Depends(),
-    db: Session = Depends(get_db),
+    username: str = Form(default=None, max_length=50), 
+    password: str = Form(default=None, max_length=50), 
+    db: Session = Depends(get_db)
     ):
         
-    user = users.get_user_by_username(username=form_data.username, db=db)
+    user = users.get_user_by_username(username, db)
     if not user:
         raise credentials_exception
 
-    correct_password = verify_password(form_data.password, user)
+    correct_password = verify_password(password, user)
     if not correct_password:
         raise credentials_exception
 
