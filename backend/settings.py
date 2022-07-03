@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     # Global settings
     TIMEZONE: int = 2
     UPDATE_TIMEOUT: int = 20
+    SITE_URL: str = 'https://honkai-pictures.ru'
 
     # Deployment settings
     FRONTEND_URL: str = 'http://localhost:8080'

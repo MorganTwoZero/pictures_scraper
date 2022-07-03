@@ -2,6 +2,8 @@ import pytest
 
 from fastapi.testclient import TestClient
 
+from routers.embed import parse_post_id
+
 
 @pytest.mark.vcr
 def test_embed(client: TestClient):
@@ -17,7 +19,6 @@ def test_embed(client: TestClient):
    'msg': 'value is not a valid integer',
    'type': 'type_error.integer'}]}),
     ])
-
 @pytest.mark.vcr
 def test_embed_wrong_id(client: TestClient, pic_id: int, expected_status_code: int, expected_json: dict[str, str]):
     '''Test if the embed returns image'''
@@ -51,3 +52,33 @@ def test_embed_json(client: TestClient):
         'author_name':'Source',
         'author_url':'https://www.pixiv.net/en/artworks/99083556'
         }
+
+@pytest.mark.parametrize('requested_id, post_id, pic_num', [
+    ('99487795_p1', 99487795, 1),
+    ('99487795_p0', 99487795, 0),
+    ('99487795', 99487795, 0),
+    pytest.param('string', 1, 1, marks=pytest.mark.xfail)
+])
+def test_embed_parse_id(
+    requested_id: str, 
+    post_id: int, 
+    pic_num: int
+    ):
+    parsed_id, parsed_pic_num = parse_post_id(requested_id)
+    assert parsed_id == post_id
+    assert parsed_pic_num == pic_num
+
+@pytest.mark.parametrize('user_agent, status_code', [
+    ('Mozilla/5.0 (compatible; Discordbot/2.0; +https://discordapp.com)', 200),
+    ('Mozilla/5.0 (Macintosh; Intel Mac OS X 11.6; rv:92.0) Gecko/20100101 Firefox/92.0', 200),
+    ('', 307),
+])
+def test_embed_discord_useragent(client: TestClient, user_agent: str, status_code: int):
+    '''Test for discord`s client/crawler detection'''
+    request = client.get(
+        '/api/embed/99083556',
+        allow_redirects=False,
+        headers={'user-agent': user_agent},
+    )
+
+    assert request.status_code == status_code
