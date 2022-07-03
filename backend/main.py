@@ -1,3 +1,5 @@
+import logging.config
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
@@ -9,6 +11,10 @@ from db.base_class import Base
 from parsers.imports import *
 from routers.imports import *
 from settings import settings
+from log_settings import LOGGING_CONFIG
+
+
+logging.config.dictConfig(LOGGING_CONFIG)
 
 Base.metadata.create_all(bind=engine) # type: ignore
 
