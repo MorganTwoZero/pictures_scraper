@@ -10,12 +10,13 @@ def get_all_users_with_twitter(db: Session) -> Iterable[UserWithTwitter]:
 
     q: Iterable[tuple[UserInDB, SettingsScheme]] = db.query(UserModel, SettingsModel).filter(
         SettingsModel.twitter_header != None,
-        ).join(UserModel).all()  # type: ignore
+        ).join(UserModel).all()
 
     users: Iterable[UserWithTwitter] = []
 
     for user, settings in q:
-        assert settings.twitter_header
+        if settings.twitter_header == '':
+            continue
         
         users.append(UserWithTwitter(
             username=user.username,
@@ -26,23 +27,29 @@ def get_all_users_with_twitter(db: Session) -> Iterable[UserWithTwitter]:
 
 def get_user_with_twitter(username: str, db: Session) -> UserWithTwitter:
 
-    user_in_db = db.query(UserModel, SettingsModel).filter(
+    q = db.query(UserModel, SettingsModel).filter(
         SettingsModel.user == username,
-        ).join(UserModel).first()  # type: ignore
+        ).join(UserModel).first()
+    assert q
 
-    user_with_twitter: UserWithTwitter = UserWithTwitter(
-        username=user_in_db.User.username,  # type: ignore
-        twitter_header=user_in_db.Settings.twitter_header,  # type: ignore
+    user_in_db: tuple[UserInDB, SettingsScheme] = q
+
+    user_with_twitter = UserWithTwitter(
+        username=user_in_db.User.username,
+        twitter_header=user_in_db.Settings.twitter_header,
     )
 
     return user_with_twitter
 
 def get_settings(username: str, db: Session) -> SettingsScheme:
-    query = db.query(SettingsModel).filter_by(user=username)
-    return query.first()
+    settings = db.query(SettingsModel).filter_by(user=username).first()
+    assert settings
+    return settings
 
 def get_user_by_username(username: str, db: Session) -> UserInDB:
-    return db.query(UserModel).filter_by(username=username).first()
+    user = db.query(UserModel).filter_by(username=username).first()
+    assert user
+    return user
 
 def create_user(user: UserFront, db: Session) -> UserInDB | None:
     if unique(UserModel, db, 'username', user.username):
