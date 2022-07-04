@@ -1,16 +1,15 @@
-import ast
 from datetime import datetime
 from typing import Sequence
-import requests
 import logging
 
+from requests import Response
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 
 from db.schemas import PostScheme, TwitterPostScheme, UserWithTwitter, UserInDB
 from dependency import get_db
 from parsers.imports import *
-from utils.request import request, request_homeline_many_users
+from utils.request import request, request_homeline_many_users, like_request
 from utils.crud.users import get_all_users_with_twitter, get_user_with_twitter
 from utils.crud.posts import get_posts, my_feed_db_get
 from security import get_current_user
@@ -73,11 +72,15 @@ async def homeline_posts(
     ):
 
     logger.debug('Myfeed requested')
+
     user_in_db: UserInDB = get_current_user(request, db)
     user: UserWithTwitter = get_user_with_twitter(user_in_db.username, db)
+    
     if user.twitter_header:
         posts = my_feed_db_get(db, user, page, offset)
         return posts
+    else:
+        return 'Twitter header is not present'
 
 @router.get("/like")
 def like(
@@ -87,13 +90,14 @@ def like(
     ):
 
     logger.debug('Like requested, post link={}'.format(post_link))
+
     post_id: int = int(post_link[-20:-1])
+
     user_in_db: UserInDB = get_current_user(request, db)
-    user = get_user_with_twitter(user_in_db.username, db)
-    r = requests.post(
-        f'https://api.twitter.com/1.1/favorites/create.json?id={post_id}', 
-        headers=ast.literal_eval(user.twitter_header)
-        )
+    user: UserWithTwitter = get_user_with_twitter(user_in_db.username, db)
+
+    r: Response = like_request(post_id, user)
+
     return {
         'status': r.status_code,
         'twitter_json': r.json()
