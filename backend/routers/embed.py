@@ -59,6 +59,10 @@ async def img(request: Request, requested_id: str, is_big: bool = True):
 
     try:
         post_id, pic_num = parse_post_id(requested_id)
+    except ValueError:
+        return JSONResponse({"error": "Post id or pic number is not an integer"}, status_code=422)
+
+    try:
         image = await pixiv_proxy_image(post_id, pic_num, is_big)
     except HTTPException as e:
         logger.exception('Embed error')
@@ -73,15 +77,18 @@ async def img(request: Request, requested_id: str, is_big: bool = True):
 def json(requested_id: str):
     '''Json for cool embed'''
 
-    post_id = parse_post_id(requested_id).post_id
+    try:
+        post_id = parse_post_id(requested_id).post_id
+    except ValueError:
+        return JSONResponse({"error": "Post id is not an integer"}, status_code=422)
     
-    url = SITE_URL+"/api/embed/{requested_id}.jpg".format(requested_id)
+    url = SITE_URL+"/api/embed/{requested_id}.jpg".format(requested_id=requested_id)
 
     json = {
             "type": "image/jpeg",
             "url": url,
             "author_name": "Source",
-            "author_url": "https://www.pixiv.net/en/artworks/{post_id}".format(post_id),
+            "author_url": "https://www.pixiv.net/en/artworks/{post_id}".format(post_id=post_id),
         }
 
     return JSONResponse(content=json, media_type="application/json")

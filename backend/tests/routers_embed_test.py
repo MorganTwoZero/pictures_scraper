@@ -14,10 +14,8 @@ def test_embed(client: TestClient):
 
 @pytest.mark.vcr
 @pytest.mark.parametrize('pic_id, expected_status_code, expected_json', [
-    ('990835560', 200, {'error': ''}),
-    ('9908355q', 422, {'detail': [{'loc': ['path', 'post_id'],
-   'msg': 'value is not a valid integer',
-   'type': 'type_error.integer'}]}),
+    ('990835560', 404, {'error': 'Post not found, probably wrong id'}),
+    ('9908355q', 422, {'error': 'Post id or pic number is not an integer'}),
     ])
 @pytest.mark.vcr
 def test_embed_wrong_id(client: TestClient, pic_id: int, expected_status_code: int, expected_json: dict[str, str]):
