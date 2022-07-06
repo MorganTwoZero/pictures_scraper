@@ -8,10 +8,10 @@ from utils.crud.posts import save_to_db
 
 TIMEZONE = settings.TIMEZONE
 
-def twitter_save(db, r):
-    if r:
+def twitter_save(db, posts):
+    if posts:
 
-        for item in r:
+        for item in posts:
             if 'media' in item['entities']:
                 save_to_db(PostScheme(
                         #-7 due to 'photo/1' in link
