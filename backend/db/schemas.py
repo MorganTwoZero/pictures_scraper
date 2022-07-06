@@ -15,18 +15,6 @@ class PostScheme(BaseModel):
     class Config:
         orm_mode = True
 
-class TwitterPostScheme(BaseModel):
-    post_link: str    
-    preview_link: str
-    images_number: int = 1    
-    author: str
-    author_link: str
-    author_profile_image: str | None = None
-    created: datetime
-
-    class Config:
-        orm_mode = True
-
 class User(BaseModel):
     username: str
     

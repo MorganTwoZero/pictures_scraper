@@ -3,7 +3,7 @@ from typing import Iterable
 
 from httpx import Response
 
-from db.schemas import TwitterPostScheme, UserWithTwitter
+from db.schemas import PostScheme, UserWithTwitter
 from settings import settings
 from utils.crud.posts import save_post_many_users
 
@@ -18,7 +18,7 @@ def homeline_save_many_users(db, result_and_user: Iterable[tuple[UserWithTwitter
 
         for post in response.json():
             if 'media' in post['entities']:
-                post = TwitterPostScheme(
+                post = PostScheme(
                     # -7 due to 'photo/1' in link
                     post_link=post['entities']['media'][0]['expanded_url'][:-7],
                     preview_link=post['entities']['media'][0]['media_url_https'],

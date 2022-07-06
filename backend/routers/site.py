@@ -6,7 +6,7 @@ from requests import Response
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 
-from db.schemas import PostScheme, TwitterPostScheme, UserWithTwitter, UserInDB
+from db.schemas import PostScheme, UserWithTwitter, UserInDB
 from dependency import get_db
 from parsers.imports import *
 from utils.request import request, request_homeline_many_users, like_request
@@ -63,7 +63,7 @@ def honkai_posts(
     posts = get_posts(db, page, offset)
     return posts
 
-@router.get("/myfeed", response_model=Sequence[TwitterPostScheme])
+@router.get("/myfeed", response_model=Sequence[PostScheme])
 async def homeline_posts(
     request: Request,
     db: Session = Depends(get_db),

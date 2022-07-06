@@ -1,21 +1,31 @@
 from typing import Iterable
 from sqlalchemy.orm import Session
 
-from db.schemas import PostScheme, TwitterPostScheme, User as UserScheme
+from db.schemas import PostScheme, User as UserScheme
 from db.models import Post as PostModel, TwitterFeedPost, User as UserModel
 from utils.crud.base import unique
 
 
-def get_posts(db: Session, page: int, offset: int) -> Iterable[PostScheme]:
+def get_posts(
+    db: Session, 
+    page: int, 
+    offset: int,
+    ) -> Iterable[PostScheme]:
     page -= 1
-    posts: list[PostScheme] = db.query(PostModel).order_by(PostModel.created.desc()).\
-        offset(page * offset).limit(offset).all()
+    posts: list[PostScheme] = db.query(PostModel
+        ).order_by(PostModel.created.desc()
+        ).offset(page * offset).limit(offset).all()
 
     return posts
 
-def my_feed_db_get(db: Session, user: UserScheme, page: int, offset: int) -> Iterable[TwitterPostScheme]:
+def my_feed_db_get(
+    db: Session, 
+    user: UserScheme, 
+    page: int, 
+    offset: int,
+    ) -> Iterable[PostScheme]:
     page -= 1
-    posts: list[TwitterPostScheme] = db.query(TwitterFeedPost).\
+    posts: list[PostScheme] = db.query(TwitterFeedPost).\
         filter(TwitterFeedPost.users.any(username=user.username)).\
         order_by(TwitterFeedPost.created.desc()).\
         offset(page * offset).limit(offset).all()  # type: ignore
@@ -30,14 +40,20 @@ def save_to_db(post: PostScheme, db: Session):
         db.refresh(db_post)
         return db_post
 
-def save_post_many_users(db: Session, post: TwitterPostScheme, user: UserScheme):
+def save_post_many_users(
+    db: Session, 
+    post: PostScheme, 
+    user: UserScheme,
+    ):
 
     db_post = TwitterFeedPost(**post.dict())
     
     #Already asserted that user is in db, so no need to check
-    user_in_db: UserModel = db.query(UserModel).filter(UserModel.username == user.username)[0]
+    user_in_db: UserModel = db.query(UserModel
+        ).filter(UserModel.username == user.username)[0]
 
-    post_in_db = db.query(TwitterFeedPost).filter(TwitterFeedPost.post_link == db_post.post_link).first()
+    post_in_db = db.query(TwitterFeedPost).filter(
+        TwitterFeedPost.post_link == db_post.post_link).first()
 
     if post_in_db is None:
         db.add(db_post)        
