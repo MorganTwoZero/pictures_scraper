@@ -1,7 +1,7 @@
 from datetime import timedelta
 
-from fastapi import APIRouter, Depends, Form, HTTPException, Response, Request
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi import APIRouter, Depends, Form, \
+    HTTPException, Response, Request
 from sqlalchemy.orm import Session
 
 from db.schemas import UserFront, Settings as SettingsScheme
@@ -28,13 +28,16 @@ def register(
     
     user = UserFront(username=username, password=password)
     if users.create_user(user, db) is None:
-        raise HTTPException(status_code=400, detail="User already exists")
+        raise HTTPException(
+            status_code=400, 
+            detail="User already exists"
+            )
 
     return {"message": "User created successfully"}
 
 
 @router.post("/login")
-async def login_for_access_token(
+async def login(
     response: Response,
     username: str = Form(default=None, max_length=50), 
     password: str = Form(default=None, max_length=50), 
@@ -52,7 +55,9 @@ async def login_for_access_token(
     access_token_expires = timedelta(
         minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token: str = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires)
+        data={"sub": user.username}, 
+        expires_delta=access_token_expires
+        )
 
     response.set_cookie(
         key="Authorization", 
@@ -106,8 +111,12 @@ def update_settings(
     ):
 
     user = get_current_user(request, db)
-    if not user:
-        raise HTTPException(status_code=400, detail="User not found")
+
+    if not settings_form.user == user.username:
+        raise HTTPException(
+            status_code=400, 
+            detail='Wrong username'
+            )
 
     users.update_settings(settings_form, db)
 

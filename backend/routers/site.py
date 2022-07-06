@@ -43,7 +43,7 @@ async def update(db: Session):
         for html in posts.lofter:
             lofter_save(db, html)
         logger.info('Lofter updated')
-        logger.info('End update ' + str(datetime.now()))
+        logger.info('Update ended ' + str(datetime.now()))
     except:
         logger.exception('error')
 
