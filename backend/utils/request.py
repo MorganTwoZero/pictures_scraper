@@ -1,6 +1,7 @@
 import ast
 import asyncio
 from typing import Iterable, Sequence
+from itertools import zip_longest
 import logging
 
 import httpx
@@ -22,35 +23,36 @@ PIXIV_HEADER: dict[str, str] = ast.literal_eval(settings.PIXIV_HEADER)
 TWITTER_HEADER = ast.literal_eval(settings.TWITTER_HEADER)
 
 urls = [PIXIV_URL, TWITTER_SEARCH_URL, MIHOYO_URL]
-headers = [PIXIV_HEADER, TWITTER_HEADER, '']
+headers = [PIXIV_HEADER, TWITTER_HEADER]
 
 for tag in LOFTER_TAGS.split(' '):
     url = LOFTER_URL + tag
     urls.append(url)
-    headers.append('')
 
 async def _get(client, url, header) -> httpx.Response | None:
     try:
-        res = await client.get(url, headers=header, timeout=20)
+        response = await client.get(url, headers=header, timeout=20)
     except httpx.TimeoutException:
-        print('timeout', url)
-        return None
-    return res
+        '''Return empty response so that some user wouldn't 
+        get other user's response in gather_tasks zip(responses, users)'''
+        response = httpx.Response(status_code=400)
+        logger.exception(
+            'Request timeout, url={url}, header={header}'.format(url, header)
+            )
+    return response
 
 async def request() -> RequestResults:
 
     client = httpx.AsyncClient()
 
     tasks = []
-    for i in range(len(urls)):
-        url = urls[i]
-        header = headers[i]
+    for url, header in zip_longest(urls, headers, fillvalue=''):
         tasks.append(asyncio.ensure_future(_get(client, url, header)))
 
-    r: list[httpx.Response] = await asyncio.gather(*tasks) # type: ignore
+    responses: tuple[httpx.Response] = await asyncio.gather(*tasks)
     await client.aclose()
 
-    results = results_to_sources(r)
+    results = results_to_sources(responses)
 
     return results
 
@@ -70,8 +72,8 @@ async def pixiv_proxy(url):
     header=PIXIV_HEADER
     header.update({'Referer': 'https://www.pixiv.net/'})
     async with httpx.AsyncClient() as client:
-        r = await _get(client, url, header)
-        return r
+        response = await _get(client, url, header)
+        return response
 
 async def request_homeline_many_users(
     users: Iterable[UserWithTwitter]
@@ -91,13 +93,10 @@ async def request_homeline_many_users(
                 )
             )
 
-    responses: list[httpx.Response] = await asyncio.gather(*tasks) # type: ignore
+    responses: tuple[httpx.Response] = await asyncio.gather(*tasks)
     await client.aclose()
 
-    results_and_users = []
-    for response, user in zip(responses, users):
-        results_and_users.append((user, response))
-    return results_and_users
+    return [i for i in zip(users, responses)]
 
 def like_request(
     post_id: int, 
