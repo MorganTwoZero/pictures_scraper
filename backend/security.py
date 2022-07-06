@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from fastapi import Request, HTTPException
+from fastapi import Request
 from passlib.context import CryptContext
 from jose import JWTError, jwt
 
@@ -44,14 +44,14 @@ def verify_password(plain_password: str, user: UserInDB) -> bool:
 def get_current_user(request: Request, db) -> UserInDB:
     token = request.cookies.get('Authorization')
     if not token:
-        raise HTTPException(status_code=204, detail="User not found")
+        raise credentials_exception
 
     username = verify_token(token)
     if not username:
-        raise HTTPException(status_code=400, detail="Invalid token")
+        raise credentials_exception
 
     user = users.get_user_by_username(username, db)
     if not user:
-        raise HTTPException(status_code=204, detail="User not found")
+        raise credentials_exception
         
     return user
