@@ -12,8 +12,6 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) 
 
-from settings import settings
-from db.schemas import UserFront, UserWithTwitter, UserInDB, Settings as SettingsScheme
 from db.base_class import Base
 from dependency import get_db
 from routers.imports import *
@@ -31,6 +29,16 @@ SQLALCHEMY_DATABASE_URL = "sqlite:///./test_db.db"
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
 )
+'''
+In-memory
+from sqlalchemy.pool import StaticPool
+SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL, 
+    connect_args={"check_same_thread": False},
+    poolclass=StaticPool,
+    )
+'''
 # Use connect_args parameter only with sqlite
 SessionTesting = sessionmaker(
     autocommit=False, autoflush=False, bind=engine)
@@ -84,13 +92,3 @@ def vcr_config():
         "filter_headers": ["Authorization"],
         "ignore_localhost": True,
         }
-'''
-@pytest.fixture(scope="function")
-def create_user(client: TestClient, db_session: Session) -> Generator[UserFront, Any, None]:
-    """
-    Create a new user and return the user's username and password.
-    """
-    user = UserFront(username="test_user", password="test_password")
-    response = client.post("/users/", json=user.dict())
-    assert response.status_code == 201
-    yield user'''
