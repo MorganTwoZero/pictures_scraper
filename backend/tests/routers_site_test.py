@@ -36,7 +36,8 @@ def create_user_with_twitter_header(client: TestClient):
     )
 
 @pytest.mark.vcr
-def test_like(create_user_with_twitter_header, client: TestClient):
+def test_site_like(
+    create_user_with_twitter_header, client: TestClient):
 
     login = client.post(
         '/api/login', 
@@ -55,7 +56,7 @@ def test_like(create_user_with_twitter_header, client: TestClient):
     assert like.json()['twitter_json']['errors'][0]['message'] == 'You have already favorited this status.'
 
 @pytest.mark.vcr
-def test_honkai(fill_db_with_posts, client: TestClient):
+def test_site_honkai(fill_db_with_posts, client: TestClient):
 
     response = client.get('/api/honkai')
 
@@ -63,7 +64,8 @@ def test_honkai(fill_db_with_posts, client: TestClient):
     assert response.json()
 
 @pytest.mark.vcr
-def test_homeline(create_user_with_twitter_header, client: TestClient):
+def test_site_homeline(
+    create_user_with_twitter_header, client: TestClient):
 
     login = client.post(
         '/api/login', 
