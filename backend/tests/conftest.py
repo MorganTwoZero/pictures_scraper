@@ -7,6 +7,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import Session
+from sqlalchemy.pool import StaticPool
 
 import sys
 import os
@@ -24,21 +25,20 @@ def start_application():
     app.include_router(embed_router)
     return app
 
-
+'''
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test_db.db"
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
 )
 '''
-In-memory
-from sqlalchemy.pool import StaticPool
+#In-memory
 SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL, 
     connect_args={"check_same_thread": False},
     poolclass=StaticPool,
     )
-'''
+
 # Use connect_args parameter only with sqlite
 SessionTesting = sessionmaker(
     autocommit=False, autoflush=False, bind=engine)
