@@ -54,7 +54,9 @@ async def request() -> RequestResults:
 
     return results
 
-def results_to_sources(results_list: Sequence[httpx.Response]) -> RequestResults:
+def results_to_sources(
+    results_list: Sequence[httpx.Response]) -> RequestResults:
+
     results = RequestResults(
         pixiv= results_list[0].json()['body']['illusts'],
         twitter_honkai= list(results_list[1].json()['globalObjects']['tweets'].values()),
@@ -71,7 +73,9 @@ async def pixiv_proxy(url):
         r = await _get(client, url, header)
         return r
 
-async def request_homeline_many_users(users: Iterable[UserWithTwitter]) -> Iterable[tuple[UserWithTwitter, httpx.Response]]:
+async def request_homeline_many_users(
+    users: Iterable[UserWithTwitter]
+    ) -> Iterable[tuple[UserWithTwitter, httpx.Response]]:
     
     client = httpx.AsyncClient()
 
@@ -79,7 +83,11 @@ async def request_homeline_many_users(users: Iterable[UserWithTwitter]) -> Itera
     for user in users:
         tasks.append(
             asyncio.ensure_future(
-                _get(client, TWITTER_HOME_URL, ast.literal_eval(user.twitter_header))
+                _get(
+                    client, 
+                    TWITTER_HOME_URL, 
+                    ast.literal_eval(user.twitter_header)
+                    )
                 )
             )
 
@@ -91,7 +99,10 @@ async def request_homeline_many_users(users: Iterable[UserWithTwitter]) -> Itera
         results_and_users.append((user, response))
     return results_and_users
 
-def like_request(post_id: int, user: UserWithTwitter) -> requests.Response:
+def like_request(
+    post_id: int, 
+    user: UserWithTwitter,
+    ) -> requests.Response:
     r = requests.post(
         f'https://api.twitter.com/1.1/favorites/create.json?id={post_id}', 
         headers=ast.literal_eval(user.twitter_header)

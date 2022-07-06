@@ -11,7 +11,10 @@ from utils.crud.posts import save_post_many_users
 TIMEZONE = settings.TIMEZONE
 
 
-def homeline_save_many_users(db, result_and_user: Iterable[tuple[UserWithTwitter, Response]]):
+def homeline_save_many_users(
+    db, 
+    result_and_user: Iterable[tuple[UserWithTwitter, Response]],
+    ):
     for i in result_and_user:
         user, response = i
         assert response.json()
