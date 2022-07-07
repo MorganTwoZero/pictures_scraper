@@ -29,15 +29,15 @@ for tag in LOFTER_TAGS.split(' '):
     url = LOFTER_URL + tag
     urls.append(url)
 
-async def _get(client, url, header) -> httpx.Response | None:
+async def _get(client, url, header) -> httpx.Response:
     try:
         response = await client.get(url, headers=header, timeout=20)
     except httpx.TimeoutException:
         '''Return empty response so that some user wouldn't 
-        get other user's response in gather_tasks zip(responses, users)'''
+        get other user's response in request_homeline_many_users'''
         response = httpx.Response(status_code=400)
         logger.exception(
-            'Request timeout, url={url}, header={header}'.format(url, header)
+            f'Request timeout, url={url}, header={header}'
             )
     return response
 
@@ -102,9 +102,9 @@ def like_request(
     post_id: int, 
     user: UserWithTwitter,
     ) -> requests.Response:
-    r = requests.post(
+    response = requests.post(
         f'https://api.twitter.com/1.1/favorites/create.json?id={post_id}', 
         headers=ast.literal_eval(user.twitter_header)
         )
 
-    return r
+    return response
