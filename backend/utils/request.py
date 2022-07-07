@@ -5,7 +5,6 @@ from itertools import zip_longest
 import logging
 
 import httpx
-import requests
 
 from settings import settings
 from db.schemas import RequestResults, UserWithTwitter
@@ -41,7 +40,7 @@ async def _get(client, url, header) -> httpx.Response:
             )
     return response
 
-async def request() -> RequestResults:
+async def request_honkai() -> RequestResults:
 
     client = httpx.AsyncClient()
 
@@ -56,26 +55,7 @@ async def request() -> RequestResults:
 
     return results
 
-def results_to_sources(
-    results_list: Sequence[httpx.Response]) -> RequestResults:
-
-    results = RequestResults(
-        pixiv= results_list[0].json()['body']['illusts'],
-        twitter_honkai= list(results_list[1].json()['globalObjects']['tweets'].values()),
-        bbs_mihoyo= results_list[2].json()['data']['list'],
-        lofter= [results_list[i].text for i in range(3, len(results_list))]
-    )
-    
-    return results
-
-async def pixiv_proxy(url):
-    header=PIXIV_HEADER
-    header.update({'Referer': 'https://www.pixiv.net/'})
-    async with httpx.AsyncClient() as client:
-        response = await _get(client, url, header)
-        return response
-
-async def request_homeline_many_users(
+async def request_homeline(
     users: Iterable[UserWithTwitter]
     ) -> Iterable[tuple[UserWithTwitter, httpx.Response]]:
     
@@ -98,13 +78,36 @@ async def request_homeline_many_users(
 
     return [i for i in zip(users, responses)]
 
-def like_request(
+def results_to_sources(
+    results_list: Sequence[httpx.Response]) -> RequestResults:
+
+    results = RequestResults(
+        pixiv= results_list[0].json()['body']['illusts'],
+        twitter_honkai= list(results_list[1].json()['globalObjects']['tweets'].values()),
+        bbs_mihoyo= results_list[2].json()['data']['list'],
+        lofter= [results_list[i].text for i in range(3, len(results_list))]
+    )
+    
+    return results
+
+async def pixiv_proxy(url):
+    header=PIXIV_HEADER
+    header.update({'Referer': 'https://www.pixiv.net/'})
+    client = httpx.AsyncClient()
+    response = await _get(client, url, header)
+    await client.aclose()
+    return response
+
+async def like_request(
     post_id: int, 
     user: UserWithTwitter,
-    ) -> requests.Response:
-    response = requests.post(
-        f'https://api.twitter.com/1.1/favorites/create.json?id={post_id}', 
-        headers=ast.literal_eval(user.twitter_header)
-        )
+    ) -> httpx.Response:
+
+    client = httpx.AsyncClient()
+    url = f'https://api.twitter.com/1.1/favorites/create.json?id={post_id}'
+    header=ast.literal_eval(user.twitter_header)
+
+    response = await client.post(url, headers=header, timeout=20)
+    await client.aclose()
 
     return response
