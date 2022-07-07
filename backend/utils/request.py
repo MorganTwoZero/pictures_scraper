@@ -32,7 +32,7 @@ for tag in LOFTER_TAGS.split(' '):
 async def _get(
     client: httpx.AsyncClient, 
     url: str, 
-    header,
+    header = None,
     ) -> httpx.Response:
     try:
         response = await client.get(url, headers=header, timeout=20)
@@ -40,7 +40,7 @@ async def _get(
         '''Return empty response so that user wouldn't 
         get other user's response in request_homeline_many_users
         if some request fails'''
-        response = httpx.Response(status_code=400)
+        response = httpx.Response(status_code=400, text='Request timeout')
         logger.exception(
             f'Request timeout, url={url}, header={header}'
             )
