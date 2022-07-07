@@ -10,3 +10,4 @@ passlib[bcrypt]
 httpx
 pytest-recording
 pytest-xdist[psutil]
+pytest-asyncio
