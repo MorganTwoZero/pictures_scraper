@@ -8,21 +8,18 @@ from settings import settings
 
 @pytest.mark.vcr
 def test_embed(client: TestClient):
-    '''Test if the embed returns image'''
     response = client.get('/api/embed/99083556')
     assert response.status_code == 200
     assert response.headers['content-type'] == 'image'
 
 @pytest.mark.vcr
 def test_embed_id_not_found(client: TestClient):
-    '''Test if the embed returns image'''
     response = client.get('/api/embed/990835560')
     assert response.status_code == 404
     assert response.json() == {'error': 'Post not found, probably wrong id'}
 
 @pytest.mark.vcr
 def test_embed_id_not_int(client: TestClient):
-    '''Test if the embed returns image'''
     response = client.get('/api/embed/9908355q')
     assert response.status_code == 422
     assert response.json() == {'error': 'Post id or pic number is not an integer'}
@@ -85,7 +82,7 @@ def test_embed_invalid_parse_id(requested_id: str):
     ('Mozilla/5.0 (Macintosh; Intel Mac OS X 11.6; rv:92.0) Gecko/20100101 Firefox/92.0', 200),
 ])
 def test_embed_discord_useragent(client: TestClient, user_agent: str, status_code: int):
-    '''Test for discord`s client/crawler detection'''
+    '''Test for discord's client/crawler detection'''
     request = client.get(
         '/api/embed/99083556',
         allow_redirects=False,
