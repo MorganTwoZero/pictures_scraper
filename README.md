@@ -1,5 +1,5 @@
 # Pictures-scraper
-https://honkai-pictures.ru/
+https://honkai-pictures.ru/ NSFW warning
 An app that collects images and links from various sources(twitter, pixiv, mihoyo bbs, lofter) merging them into a single feed. 
 
 Built in fastapi and vue
