@@ -1,5 +1,6 @@
 # Pictures-scraper
-An app that collects an images and links from various sources(twitter, pixiv, mihoyo bbs, lofter) merging them into a single stream. 
+https://honkai-pictures.ru/
+An app that collects images and links from various sources(twitter, pixiv, mihoyo bbs, lofter) merging them into a single feed. 
 
 Built in fastapi and vue
 ## Why?
@@ -9,8 +10,8 @@ Built in fastapi and vue
 ## Features
 1. Scrape pictures and display them in a single stream
 2. Add links to sources and authors
+3. Like button
 ---
-3. Mark seen
-4. Like/retweet/follow
+4. Mark seen
 7. Omit duplicates
 8. Send to discord
