@@ -56,6 +56,7 @@ def save_post_many_users(
         TwitterFeedPost.post_link == db_post.post_link).first()
 
     if post_in_db is None:
+        db_post.users.append(user_in_db)
         db.add(db_post)        
         db.commit()
         db.refresh(db_post)
