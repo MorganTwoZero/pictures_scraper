@@ -1,10 +1,12 @@
 import re
 
+from aiocache import cached
 from fastapi import HTTPException
 
 from utils.request import pixiv_proxy
 
 
+@cached()
 async def pixiv_proxy_image(post_id: int, pic_num: int, is_big: bool) -> bytes | None:
     
     url = 'https://www.pixiv.net/touch/ajax/illust/details?illust_id=' + str(post_id)

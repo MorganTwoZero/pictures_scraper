@@ -25,6 +25,11 @@ LOGGING_CONFIG = {
             'handlers': ['stream_handler', 'logfile'],
             'level': 'DEBUG',
             'propagate': True
-        }
+        },
+        'utils': {
+            'handlers': ['stream_handler', 'logfile'],
+            'level': 'DEBUG',
+            'propagate': True
+        },
     }
 }

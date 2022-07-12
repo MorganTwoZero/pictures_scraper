@@ -1,4 +1,3 @@
-from functools import lru_cache
 import re
 from typing import NamedTuple
 import logging
@@ -44,7 +43,6 @@ def parse_post_id(requested_id: str) -> ParsedPostId:
 
     return ParsedPostId(int(requested_id), 0)
 
-@lru_cache
 @router.get('/{requested_id}.jpg', response_class=Response)
 async def img(request: Request, requested_id: str, is_big: bool = True):
     '''Check if a user is accessing the embed from a discord client, 
