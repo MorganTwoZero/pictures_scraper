@@ -89,14 +89,15 @@ def results_to_sources(
 
     results = RequestResults(
         pixiv = results_list[0].json()['body']['illusts'],
-        twitter_honkai = list(results_list[1].json()['globalObjects']['tweets'].values()),
+        twitter_honkai = list(results_list[1].json(
+            )['globalObjects']['tweets'].values()),
         bbs_mihoyo = results_list[2].json()['data']['list'],
         lofter = [result.text for result in results_list[3:]],
     )
     
     return results
 
-async def pixiv_proxy(url):
+async def pixiv_proxy(url) -> httpx.Response:
 
     header=PIXIV_HEADER
     header.update({'Referer': 'https://www.pixiv.net/'})
