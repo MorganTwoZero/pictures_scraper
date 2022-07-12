@@ -5,6 +5,7 @@ from fastapi.testclient import TestClient
 from settings import settings
 
 
+@pytest.mark.vcr
 @pytest.fixture
 def fill_db_with_posts(client: TestClient):
     client.get('/api/update')

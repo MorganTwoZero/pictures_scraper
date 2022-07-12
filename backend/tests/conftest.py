@@ -13,6 +13,8 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) 
 
+from db.schemas import UserWithTwitter
+from settings import settings
 from db.base_class import Base
 from dependency import get_db
 from routers.imports import *
@@ -72,8 +74,8 @@ def client(
 ) -> Generator[TestClient, Any, None]:
     """
     Create a new FastAPI TestClient that uses 
-    the `db_session` fixture to override
-    the `get_db` dependency that is injected into routes.
+    the "db_session" fixture to override
+    the "get_db" dependency that is injected into routes.
     """
 
     def _get_test_db():
@@ -93,3 +95,11 @@ def vcr_config():
         "filter_headers": ["Authorization"],
         "ignore_localhost": True,
         }
+
+@pytest.fixture
+def user_with_twitter():
+    user = UserWithTwitter(
+        username='test',
+        twitter_header=settings.TWITTER_HEADER,
+    )
+    return user

@@ -1,18 +1,9 @@
 import pytest
 import httpx
 
-from db.schemas import RequestResults, UserWithTwitter
-from settings import settings
+from db.schemas import RequestResults
 from utils import request
 
-
-@pytest.fixture
-def user_with_twitter():
-    user = UserWithTwitter(
-        username='test',
-        twitter_header=settings.TWITTER_HEADER,
-    )
-    return user
 
 @pytest.mark.vcr
 async def test_request_honkai():
