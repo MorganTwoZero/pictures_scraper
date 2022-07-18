@@ -35,7 +35,6 @@ function getNextPosts() {
   }
 
 window.onscroll = debounce(getNextPosts, 200);
-window.onscroll = getNextPosts;
 
 onBeforeMount(() => {
   axios.get(router.currentRoute.value.fullPath + '?page=' + page)
