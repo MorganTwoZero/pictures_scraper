@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Sequence
 import logging
 
@@ -12,6 +12,7 @@ from parsers.imports import *
 from utils.request import request_honkai, request_homeline, like_request
 from utils.crud.users import get_all_users_with_twitter, get_user_with_twitter
 from utils.crud.posts import get_posts, my_feed_db_get
+from settings import settings
 from security import get_current_user
 
 
@@ -24,7 +25,7 @@ router = APIRouter(
     tags=["site"],
 )
 
-last_update = datetime.now()
+last_update = datetime.now() + timedelta(hours=settings.TIMEZONE)
 async def update(db: Session):
     logger.info('Update started')
 
@@ -52,7 +53,7 @@ async def update(db: Session):
 async def start_update(db: Session = Depends(get_db)):
     await update(db)
     global last_update
-    last_update = datetime.now()
+    last_update = datetime.now() + timedelta(hours=settings.TIMEZONE)
     return {'message': 'Updated'}
 
 @router.get('/update/last_update')

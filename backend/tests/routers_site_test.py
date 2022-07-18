@@ -1,5 +1,5 @@
 import pytest
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from fastapi.testclient import TestClient
 
@@ -91,5 +91,5 @@ def test_site_homeline(
 async def test_last_update():
     await start_update()
     last_update = await update_time()
-    now = datetime.now()
+    now = datetime.now() + timedelta(hours=settings.TIMEZONE)
     assert last_update == now
