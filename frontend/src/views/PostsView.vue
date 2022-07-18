@@ -39,6 +39,7 @@ function getNextPosts() {
 window.onscroll = getNextPosts;
 
 onBeforeMount(() => {
+  page = 1;
   axios.get(router.currentRoute.value.fullPath + '?page=' + page)
   .then((res) => {
     posts.value = res.data;
