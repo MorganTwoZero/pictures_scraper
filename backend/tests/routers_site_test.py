@@ -1,7 +1,9 @@
 import pytest
+from datetime import datetime
 
 from fastapi.testclient import TestClient
 
+from routers.site import start_update, update_time
 from settings import settings
 
 
@@ -84,3 +86,10 @@ def test_site_homeline(
 
     assert response.status_code == 200
     assert response.json()
+
+@pytest.mark.vcr
+async def test_last_update():
+    await start_update()
+    last_update = await update_time()
+    now = datetime.now()
+    assert last_update == now

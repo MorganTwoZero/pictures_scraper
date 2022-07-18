@@ -32,6 +32,9 @@
           <li v-if="!isAuthenticated" class="nav-item">
             <router-link class="nav-link" to="/register">Register</router-link>
           </li>
+          <li class="nav-item nav-link">
+            Last update: {{ LastUpdate }}
+          </li>
         </ul>
       </div>
     </div>
@@ -44,7 +47,7 @@ import { storeToRefs } from 'pinia'
 import router from '@/router'
 const store = useStore()
 
-const { isAuthenticated, User } = storeToRefs(store)
+const { isAuthenticated, User, LastUpdate } = storeToRefs(store)
 
 function refresh(e) {
   if (e.target.getAttribute('href') == router.currentRoute.value.fullPath) {

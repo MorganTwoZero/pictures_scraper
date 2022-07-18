@@ -19,6 +19,7 @@ onBeforeUpdate(() => {
   if (!document.cookie.includes('username')) {
     store.LogOut();
   }
+  store.lastUpdateSetter()
 })
 
 

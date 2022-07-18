@@ -9,14 +9,21 @@ export const useStore = defineStore({
             if (key === 'username') {
                 return value;
             }
-        })     
+        }),
+        lastUpdate: null,
     }),
     persist: true,
     getters: {
         isAuthenticated: state => !!state.user,
         User: state => state.user,
+        LastUpdate: state => state.lastUpdate,
     },
     actions: {
+        async lastUpdateSetter() {
+            axios.get('update/last_update').then(res => {
+                this.lastUpdate = new Date(res.data).toLocaleTimeString('ru')
+              })
+        },
         async Register(form) {
             return new Promise((resolve, reject) => {
                 axios({

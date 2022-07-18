@@ -24,6 +24,7 @@ router = APIRouter(
     tags=["site"],
 )
 
+last_update = datetime.now()
 async def update(db: Session):
     logger.info('Update started')
 
@@ -50,7 +51,13 @@ async def update(db: Session):
 @router.get("/update")
 async def start_update(db: Session = Depends(get_db)):
     await update(db)
+    global last_update
+    last_update = datetime.now()
     return {'message': 'Updated'}
+
+@router.get('/update/last_update')
+async def update_time():
+    return last_update
 
 @router.get("/honkai", response_model=Sequence[PostScheme])
 def honkai_posts(
