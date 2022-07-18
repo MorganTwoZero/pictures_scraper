@@ -15,6 +15,7 @@ import axios from 'axios'
 let posts = ref([]);
 let page = 1;
 
+// eslint-disable-next-line
 function debounce(func, wait) {
     let timeout;
     return () => {
@@ -34,7 +35,8 @@ function getNextPosts() {
     }
   }
 
-window.onscroll = debounce(getNextPosts, 200);
+/*window.onscroll = debounce(getNextPosts, 200);*/
+window.onscroll = getNextPosts;
 
 onBeforeMount(() => {
   axios.get(router.currentRoute.value.fullPath + '?page=' + page)
