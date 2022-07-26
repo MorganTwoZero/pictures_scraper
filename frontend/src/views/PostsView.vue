@@ -2,7 +2,7 @@
   <div v-for="post in posts" :key="post.post_link">
     <PostsComponent :post="post" />
   </div>
-  <div class="loading">
+  <div id="loading">
     <svg viewBox="25 25 50 50">
       <circle cx="50" cy="50" r="20"></circle>
     </svg>
@@ -10,27 +10,19 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
-import router from '@/router'
-
-import PostsComponent from '@/components/PostsComponent.vue'
-
 import axios from 'axios'
+
+import { onMounted, ref } from 'vue'
+
+import router from '@/router'
+import PostsComponent from '@/components/PostsComponent.vue'
 
 let posts = ref([]);
 let page = 1;
 
 function setLoadingObserver() {
-
-  const loadingObserver = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) { 
-        getPosts()
-      }
-    })
-  });
-
-  loadingObserver.observe(document.querySelector('.loading'))
+  const loadingObserver = new IntersectionObserver(getPosts);
+  loadingObserver.observe(document.querySelector('#loading'))
 }
 
 function getPosts() {
@@ -54,7 +46,7 @@ div {
   height: max-content;
 }
 
-.loading {
+#loading {
   border: 3px solid hsla(185, 100%, 62%, 0.2);
   border-top-color: #3cefff;
   border-radius: 50%;
