@@ -21,7 +21,7 @@
 </template>
 
 <script setup>
-import { computed, defineProps } from 'vue'
+import { computed, defineProps, onBeforeMount } from 'vue'
 
 import LikeButton from './LikeButton.vue';
 
@@ -31,6 +31,11 @@ const post = defineProps({
         required: true,
     }
 })
+function PixivLink(post) {
+    if (post.post.post_link.startsWith('https://www.pixiv.net')) {
+        post.post.preview_link = `${process.env.VUE_APP_BACKEND_URL}/embed/${post.post.post_link.slice(-9)}.jpg?is_big=false`
+    }
+}
 
 const created = computed(() => {
     return new Date(post.post.created).toLocaleTimeString('ru');
@@ -42,12 +47,18 @@ function toClipboard(e) {
         if (post.post.post_link.startsWith('https://twitter.com/')) {
             text = `<${post.post.post_link}> ${post.post.preview_link}?name=orig`;
         } else if (post.post.post_link.startsWith('https://www.pixiv.net')) {
-            text = `https://honkai-pictures.ru/api/embed/${post.post.post_link.slice(-8)}`;
+            text = `https://honkai-pictures.ru/api/embed/${post.post.post_link.slice(-9)}`;
         } else {
             text = `<${post.post.post_link}> ${post.post.preview_link.replace(/\?.*/, '')}`;
         }
         navigator.clipboard.writeText(text);
 }
+
+onBeforeMount(() => {
+    if (post.post.post_link.startsWith('https://www.pixiv.net')) {
+        PixivLink(post)
+    }
+})
 </script>
 
 <style scoped>
