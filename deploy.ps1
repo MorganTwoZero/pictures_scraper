@@ -1,5 +1,5 @@
 ssh root@vpn "cd pictures_scraper && docker compose stop && git pull"
-ssh root@vpn "docker compose up --build"
+ssh root@vpn "cd pictures_scraper && docker compose up --build"
 #clean deploy
 #ssh root@vpn "cd pictures_scraper && docker compose stop && cd .. && rm -rf pictures_scraper && git clone https://github.com/MorganTwoZero/pictures_scraper"
 #ssh root@vpn "mkdir ./pictures_scraper/certs" 
