@@ -44,13 +44,16 @@ def parse_post_id(requested_id: str) -> ParsedPostId:
     return ParsedPostId(int(requested_id), 0)
 
 @router.get('/{requested_id}.jpg', response_class=Response)
-async def img(request: Request, requested_id: str, is_big: bool = True):
+async def img(request: Request, requested_id: str, is_big: bool | None = None):
     '''Check if a user is accessing the embed from a discord client, 
-    if so, send small image, else send is_big image'''
+    if so, send small image, else send is_big image. By default return small pic.'''
 
     logger.debug(
         "Image requested, requested_id={}, user_agent={}".format(requested_id,request.headers.get('user-agent'))
     )
+
+    if is_big == None:
+        is_big = True
     
     if _discord(request):
         is_big = False
