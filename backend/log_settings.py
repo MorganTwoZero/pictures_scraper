@@ -26,7 +26,12 @@ LOGGING_CONFIG = {
             'level': 'DEBUG',
             'propagate': True
         },
-        'utils': {
+        'parsers': {
+            'handlers': ['stream_handler', 'logfile'],
+            'level': 'DEBUG',
+            'propagate': True
+        },
+        'uvicorn': {
             'handlers': ['stream_handler', 'logfile'],
             'level': 'DEBUG',
             'propagate': True

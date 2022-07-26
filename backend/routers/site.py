@@ -45,7 +45,7 @@ async def update(db: Session):
         for html in posts.lofter:
             lofter_save(db, html)
         logger.info('Lofter updated')
-        logger.info('Update ended ' + str(datetime.now()))
+        logger.info('Update ended')
     except:
         logger.exception('error')
 
@@ -62,12 +62,13 @@ async def update_time():
 
 @router.get("/honkai", response_model=Sequence[PostScheme])
 def honkai_posts(
+    request: Request,
     db: Session = Depends(get_db),
     page: int = 1, 
     offset: int = 5
     ):
 
-    logger.debug('Honkai posts requested')
+    logger.debug(f'Honkai posts requested, URL: {request.url}')
     posts = get_posts(db, page, offset)
     return posts
 
@@ -79,7 +80,7 @@ async def homeline_posts(
     offset: int = 5
     ):
 
-    logger.debug('Myfeed requested')
+    logger.debug(f'Myfeed requested, URL: {request.url}')
 
     user_in_db: UserInDB = get_current_user(request, db)
     user: UserWithTwitter = get_user_with_twitter(user_in_db.username, db)
