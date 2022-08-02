@@ -8,7 +8,7 @@ services:
       - 8000:8000
     volumes:
       - './backend:/app'
-    command: uvicorn main:app --port 8000 --reload --host 0.0.0.0
+    command: uvicorn main:app --reload --env-file uvicorn.env
     env_file:
       - .env 
     environment:
