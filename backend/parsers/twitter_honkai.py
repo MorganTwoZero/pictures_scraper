@@ -13,7 +13,7 @@ TIMEZONE = settings.TIMEZONE
 #Logging
 logger = logging.getLogger(__name__)
 
-def twitter_save(db, posts):
+def parse(db, posts):
     if posts:
 
         for item in posts:

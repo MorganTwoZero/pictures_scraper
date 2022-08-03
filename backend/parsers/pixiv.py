@@ -17,7 +17,7 @@ POST_LINK_TEMPLATE = 'https://www.pixiv.net/en/artworks/'
 AUTHOR_LINK_TEMPLATE = 'https://www.pixiv.net/en/users/'
 
 
-def pixiv_save(db, posts):
+def parse(db, posts):
     if posts:      
 
         for post in posts:

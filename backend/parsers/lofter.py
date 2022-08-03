@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 TIMEZONE = settings.TIMEZONE
 
-def lofter_save(db, htmls):
+def parse(db, htmls):
     for html in htmls:
         if html:
 

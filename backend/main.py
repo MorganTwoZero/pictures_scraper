@@ -8,8 +8,9 @@ from fastapi_utils.tasks import repeat_every
 
 from db.database import engine
 from db.base_class import Base
-from parsers.imports import *
-from routers.imports import *
+from routers.embed import router as embed_router
+from routers.site import router as site_router
+from routers.users import router as users_router
 from settings import settings
 from log_settings import LOGGING_CONFIG
 

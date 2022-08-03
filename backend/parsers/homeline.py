@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 from typing import Iterable
 import logging
 
-
 from httpx import Response
 
 from db.schemas import PostScheme, UserWithTwitter
@@ -15,7 +14,7 @@ TIMEZONE = settings.TIMEZONE
 #Logging
 logger = logging.getLogger(__name__)
 
-def homeline_save_many_users(
+def parse(
     db, 
     result_and_user: Iterable[tuple[UserWithTwitter, Response]],
     ):

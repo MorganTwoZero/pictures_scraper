@@ -17,7 +17,9 @@ from db.schemas import UserWithTwitter
 from settings import settings
 from db.base_class import Base
 from dependency import get_db
-from routers.imports import *
+from routers.embed import router as embed_router
+from routers.site import router as site_router
+from routers.users import router as users_router
 
 
 def start_application():
