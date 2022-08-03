@@ -24,21 +24,25 @@ router = APIRouter(
     prefix='/api',
     tags=["site"],
 )
+async def save_homeline(db):
+    users = get_all_users_with_twitter(db)
+    homeline =  await request_homeline(users)
+    homeline_save_many_users(db, homeline)
+
+async def save_honkai(db):
+    posts = await request_honkai()
+    twitter_save(db, posts.twitter_honkai)        
+    pixiv_save(db, posts.pixiv)
+    mihoyo_bbs_save(db, posts.bbs_mihoyo)        
+    lofter_save(db, posts.lofter)
 
 last_update = datetime.now() + timedelta(hours=settings.TIMEZONE)
 async def update(db: Session):
     logger.info('Update started')
 
     try:
-        users = get_all_users_with_twitter(db)
-        posts =  await request_homeline(users)
-        homeline_save_many_users(db, posts)
-
-        posts = await request_honkai()
-        twitter_save(db, posts.twitter_honkai)        
-        pixiv_save(db, posts.pixiv)
-        mihoyo_bbs_save(db, posts.bbs_mihoyo)        
-        lofter_save(db, posts.lofter)
+        await save_homeline(db)
+        await save_honkai(db)
         logger.info('Update ended')
     except:
         logger.exception('error')
