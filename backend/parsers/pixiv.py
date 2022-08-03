@@ -1,9 +1,13 @@
 from datetime import datetime, timedelta
+import logging
 
 from db.schemas import PostScheme
 from settings import settings
 from utils.crud.posts import save_to_db
 
+
+#Logging
+logger = logging.getLogger(__name__)
 
 TIMEZONE = settings.TIMEZONE
 
@@ -30,3 +34,4 @@ def pixiv_save(db, posts):
                     author_link=f"{AUTHOR_LINK_TEMPLATE + str(post['author_details']['user_id'])}",
                     ),
                 db)
+        logger.info('Pixiv updated')

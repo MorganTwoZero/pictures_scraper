@@ -1,16 +1,19 @@
 from datetime import datetime, timedelta
+import logging
 
 from db.schemas import PostScheme
 from settings import settings
 from utils.crud.posts import save_to_db
 
 
+#Logging
+logger = logging.getLogger(__name__)
+
 TIMEZONE = settings.TIMEZONE
 
 POST_LINK_TEMPLATE = 'https://bbs.mihoyo.com/bh3/article/'
 POST_PREVIEW_TEMPLATE = '?x-oss-process=image/resize,s_500/quality,q_80/auto-orient,0/interlace,1/format,jpg'
 AUTHOR_LINK_TEMPLATE = 'https://bbs.mihoyo.com/bh3/accountCenter/postList?id='
-
 
 def mihoyo_bbs_save(db, posts):
     if posts:
@@ -27,3 +30,4 @@ def mihoyo_bbs_save(db, posts):
                 author_profile_image=post['user']['avatar_url'],
                     ),
                 db)
+        logger.info('Mihoyo updated')

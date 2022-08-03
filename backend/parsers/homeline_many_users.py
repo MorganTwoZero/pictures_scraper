@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta
 from typing import Iterable
+import logging
+
 
 from httpx import Response
 
@@ -10,6 +12,8 @@ from utils.crud.posts import save_post_many_users
 
 TIMEZONE = settings.TIMEZONE
 
+#Logging
+logger = logging.getLogger(__name__)
 
 def homeline_save_many_users(
     db, 
@@ -34,3 +38,5 @@ def homeline_save_many_users(
                     author_profile_image=post['user']['profile_image_url_https'],
                 )
                 save_post_many_users(db, post, user)
+
+    logger.info('Homeline updated')

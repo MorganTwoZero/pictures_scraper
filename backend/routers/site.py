@@ -33,18 +33,12 @@ async def update(db: Session):
         users = get_all_users_with_twitter(db)
         posts =  await request_homeline(users)
         homeline_save_many_users(db, posts)
-        logger.info('Homeline updated')
 
         posts = await request_honkai()
-        twitter_save(db, posts.twitter_honkai)
-        logger.info('Twitter updated')
+        twitter_save(db, posts.twitter_honkai)        
         pixiv_save(db, posts.pixiv)
-        logger.info('Pixiv updated')
-        mihoyo_bbs_save(db, posts.bbs_mihoyo)
-        logger.info('Mihoyo updated')
-        for html in posts.lofter:
-            lofter_save(db, html)
-        logger.info('Lofter updated')
+        mihoyo_bbs_save(db, posts.bbs_mihoyo)        
+        lofter_save(db, posts.lofter)
         logger.info('Update ended')
     except:
         logger.exception('error')

@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta
 from re import sub
+import logging
+
 
 from db.schemas import PostScheme
 from settings import settings
@@ -7,6 +9,9 @@ from utils.crud.posts import save_to_db
 
 
 TIMEZONE = settings.TIMEZONE
+
+#Logging
+logger = logging.getLogger(__name__)
 
 def twitter_save(db, posts):
     if posts:
@@ -29,3 +34,4 @@ def twitter_save(db, posts):
                         author_profile_image=None,
                         ),
                     db)
+        logger.info('Twitter updated')
