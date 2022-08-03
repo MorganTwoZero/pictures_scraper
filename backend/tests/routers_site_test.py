@@ -1,6 +1,5 @@
 import pytest
-from datetime import datetime, timedelta
-
+from datetime import datetime, timezone
 from fastapi.testclient import TestClient
 
 from routers.site import start_update, update_time
@@ -91,5 +90,5 @@ def test_site_homeline(
 async def test_last_update():
     await start_update()
     last_update = await update_time()
-    now = datetime.now() + timedelta(hours=settings.TIMEZONE)
+    now = datetime.now(tz=timezone.utc)
     assert last_update == now

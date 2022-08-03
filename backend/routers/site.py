@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timezone
 from typing import Sequence
 import logging
 
@@ -36,7 +36,7 @@ async def save_honkai(db):
     mihoyo_bbs_save(db, posts.bbs_mihoyo)        
     lofter_save(db, posts.lofter)
 
-last_update = datetime.now() + timedelta(hours=settings.TIMEZONE)
+last_update = datetime.now(tz=timezone.utc)
 async def update(db: Session):
     logger.info('Update started')
 
@@ -51,7 +51,7 @@ async def update(db: Session):
 async def start_update(db: Session = Depends(get_db)):
     await update(db)
     global last_update
-    last_update = datetime.now() + timedelta(hours=settings.TIMEZONE)
+    last_update = datetime.now(tz=timezone.utc)
     return {'message': 'Updated'}
 
 @router.get('/update/last_update')
@@ -60,10 +60,10 @@ async def update_time():
 
 @router.get("/honkai", response_model=Sequence[PostScheme])
 def honkai_posts(
-    request: Request,
-    db: Session = Depends(get_db),
-    page: int = 1, 
-    offset: int = 5
+        request: Request,
+        db: Session = Depends(get_db),
+        page: int = 1, 
+        offset: int = 5
     ):
 
     logger.debug(f'Honkai posts requested, URL: {request.url}')
@@ -72,10 +72,10 @@ def honkai_posts(
 
 @router.get("/myfeed", response_model=Sequence[PostScheme])
 async def homeline_posts(
-    request: Request,
-    db: Session = Depends(get_db),
-    page: int = 1, 
-    offset: int = 5
+        request: Request,
+        db: Session = Depends(get_db),
+        page: int = 1, 
+        offset: int = 5
     ):
 
     logger.debug(f'Myfeed requested, URL: {request.url}')
