@@ -31,11 +31,6 @@ const post = defineProps({
         required: true,
     }
 })
-function PixivLink(post) {
-    if (post.post.post_link.startsWith('https://www.pixiv.net')) {
-        post.post.preview_link = `https://www.pixiv.sbs/en/artworks/${post.post.post_link.slice(-9)}.jpg?is_big=false`
-    }
-}
 
 const created = computed(() => {
     return new Date(post.post.created).toLocaleTimeString('ru');
@@ -47,8 +42,9 @@ function toClipboard(e) {
         if (post.post.post_link.startsWith('https://twitter.com/')) {
             text = `<${post.post.post_link}> ${post.post.preview_link}?name=orig`;
         } else if (post.post.post_link.startsWith('https://www.pixiv.net')) {
-            text = `https://www.pixiv.sbs/en/artworks/${post.post.post_link.slice(-9)}`;
+            text = post.post.post_link.replace('net', 'sbs') + '.jpg';
         } else {
+            /* Delete everything after '?.' */
             text = `<${post.post.post_link}> ${post.post.preview_link.replace(/\?.*/, '')}`;
         }
         navigator.clipboard.writeText(text);
@@ -56,7 +52,7 @@ function toClipboard(e) {
 
 onBeforeMount(() => {
     if (post.post.post_link.startsWith('https://www.pixiv.net')) {
-        PixivLink(post)
+        post.post.preview_link = post.post.post_link.replace('net', 'sbs') + '.jpg?is_big=false'
     }
 })
 </script>
