@@ -16,10 +16,8 @@ from settings import settings
 from security import get_current_user
 
 
-#Logging
 logger = logging.getLogger(__name__)
 
-#Routers
 router = APIRouter(
     prefix='/api',
     tags=["site"],
@@ -55,7 +53,7 @@ async def start_update(db: Session = Depends(get_db)):
     return {'message': 'Updated'}
 
 @router.get('/update/last_update')
-async def update_time():
+async def update_time() -> datetime:
     return last_update
 
 @router.get("/honkai", response_model=Sequence[PostScheme])
