@@ -84,7 +84,7 @@ async def redirect(request: Request, requested_id: str):
     return json
 
 @router.get('/{requested_id}')
-def html(request: Request, requested_id: str):
+def html(request: Request, requested_id: str, is_big: bool | None = None):
     '''Check if a user is accessing the embed from a discord client,
     if not (i.e. directly from a browser) then redirect to the .jpg version.'''
 

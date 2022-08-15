@@ -33,7 +33,7 @@ const post = defineProps({
 })
 
 function PixivLink(post) {
-    post.post.preview_link = post.post.post_link.replace('net', 'sbs') + '?is_big=false'
+    post.post.preview_link = post.post.post_link.replace('net', 'sbs') + '.jpg?is_big=false'
 }
 
 const created = computed(() => {
