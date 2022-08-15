@@ -8,11 +8,11 @@ services:
       - 8000:8000
     volumes:
       - './backend:/app'
-    command: uvicorn main:app --reload --env-file uvicorn.env
+    command: uvicorn main:app
     env_file:
       - .env 
     environment:
-      - FRONTEND_URL=https://honkai-pictures.ru
+      - FRONTEND_URL=https://pixiv.sbs
 
   frontend:
     build: ./frontend
@@ -20,7 +20,7 @@ services:
       - './frontend:/app'
       - '/app/node_modules'
     environment:
-      - VUE_APP_BACKEND_URL=https://honkai-pictures.ru/api
+      - VUE_APP_BACKEND_URL=https://pixiv.sbs/api
     command: npm run build
 
   nginx:
