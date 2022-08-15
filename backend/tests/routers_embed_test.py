@@ -3,52 +3,50 @@ import pytest
 from fastapi.testclient import TestClient
 
 from routers.embed import parse_post_id
-from settings import settings
 
+
+SITE_URL = 'https://www.pixiv.sbs/en/artworks'
 
 @pytest.mark.vcr
 def test_embed(client: TestClient):
-    response = client.get('/api/embed/99083556')
+    response = client.get('/en/artworks/99083556')
     assert response.status_code == 200
     assert response.headers['content-type'] == 'image'
 
 @pytest.mark.vcr
 def test_embed_id_not_found(client: TestClient):
-    response = client.get('/api/embed/990835560')
+    response = client.get('/en/artworks/990835560')
     assert response.status_code == 404
-    assert response.json() == {'error': 'Post not found, probably wrong id'}
+    assert response.json() == {'detail': 'Post not found, probably wrong id'}
 
 @pytest.mark.vcr
 def test_embed_id_not_int(client: TestClient):
-    response = client.get('/api/embed/9908355q')
+    response = client.get('/en/artworks/9908355q')
     assert response.status_code == 422
-    assert response.json() == {'error': 'Post id or pic number is not an integer'}
+    assert response.json() == {'detail': 'Post id or pic number is not an integer'}
 
 @pytest.mark.vcr
 def test_embed_discord(client: TestClient):
     '''Test if the embed returns html with json for discord'''
     response = client.get(
-        '/api/embed/99083556',
+        '/en/artworks/99083556',
         headers={'user-agent': 'Mozilla/5.0 (compatible; Discordbot/2.0; +https://discordapp.com)'})
     assert response.status_code == 200
     assert response.headers['content-type'] == 'text/html; charset=utf-8'
     assert response.text.startswith('\n        <html>')
     assert response.text.endswith('</html>\n    ')
-    assert settings.SITE_URL+'/api/embed/99083556.json' in response.text
     
 @pytest.mark.vcr
 def test_embed_json(client: TestClient):
     '''Test for the correct json'''
     response = client.get(
-        '/api/embed/99083556.json',
+        '/en/artworks/99083556.json',
         headers={'user-agent': 'Mozilla/5.0 (compatible; Discordbot/2.0; +https://discordapp.com)'})
     assert response.status_code == 200
     assert response.headers['content-type'] == 'application/json'
     assert response.json() == {
-        'type':'image/jpeg',
-        'url': settings.SITE_URL+'/api/embed/99083556.jpg',
-        'author_name':'Source',
-        'author_url':'https://www.pixiv.net/en/artworks/99083556'
+            "type": "image/jpeg",
+            "url": SITE_URL+'/99083556.jpg'
         }
 
 @pytest.mark.parametrize('requested_id, post_id, pic_num', [
@@ -84,7 +82,7 @@ def test_embed_invalid_parse_id(requested_id: str):
 def test_embed_discord_useragent(client: TestClient, user_agent: str, status_code: int):
     '''Test for discord's client/crawler detection'''
     request = client.get(
-        '/api/embed/99083556',
+        '/en/artworks/99083556',
         allow_redirects=False,
         headers={'user-agent': user_agent},
     )
@@ -93,7 +91,7 @@ def test_embed_discord_useragent(client: TestClient, user_agent: str, status_cod
 
 def test_embed_not_discord_useragent(client: TestClient):
     request = client.get(
-        '/api/embed/99083556',
+        '/en/artworks/99083556',
         allow_redirects=False,
         headers={'user-agent': ''},
     )
