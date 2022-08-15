@@ -32,6 +32,10 @@ const post = defineProps({
     }
 })
 
+function PixivLink(post) {
+    post.post.preview_link = post.post.post_link.replace('net', 'sbs') + '.jpg?is_big=false'
+}
+
 const created = computed(() => {
     return new Date(post.post.created).toLocaleTimeString('ru');
 });
@@ -52,7 +56,7 @@ function toClipboard(e) {
 
 onBeforeMount(() => {
     if (post.post.post_link.startsWith('https://www.pixiv.net')) {
-        post.post.preview_link = post.post.post_link.replace('net', 'sbs') + '.jpg?is_big=false'
+        PixivLink(post)
     }
 })
 </script>
