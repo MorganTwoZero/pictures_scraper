@@ -12,7 +12,7 @@ from settings import settings
 SITE_URL = settings.SITE_URL
 
 router = APIRouter(
-    prefix="/api/embed",
+    prefix="/en/artworks",
     tags=["embed"],
 )
 
@@ -83,7 +83,7 @@ def json(requested_id: str):
     except ValueError:
         return JSONResponse({"error": "Post id is not an integer"}, status_code=422)
     
-    url = SITE_URL+"/api/embed/{requested_id}.jpg".format(requested_id=requested_id)
+    url = SITE_URL+"/en/artworks/{requested_id}.jpg".format(requested_id=requested_id)
 
     json = {
             "type": "image/jpeg",
@@ -104,14 +104,14 @@ def html(request: Request, requested_id: str):
     )
 
     if not _discord(request):
-        return RedirectResponse(url=SITE_URL+'/api/embed/{requested_id}.jpg'.format(requested_id=requested_id))
+        return RedirectResponse(url=SITE_URL+'/en/artworks/{requested_id}.jpg'.format(requested_id=requested_id))
 
     html = '''
         <html>
             <head>
-                <link type="application/json+oembed" href="{SITE_URL}/api/embed/{requested_id}.json"/>
+                <link type="application/json+oembed" href="{SITE_URL}/en/artworks/{requested_id}.json"/>
                 <meta name="twitter:card" content="summary_large_image">
-                <meta name="twitter:image" content="{SITE_URL}/api/embed/{requested_id}.jpg">
+                <meta name="twitter:image" content="{SITE_URL}/en/artworks/{requested_id}.jpg">
             </head>
         </html>
     '''.format(requested_id=requested_id, SITE_URL=SITE_URL)

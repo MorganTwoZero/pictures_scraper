@@ -3,7 +3,7 @@
 .db
 test_db.db
 /certs
-.log
+log.txt
 
 .pytest_cache
 cassettes
