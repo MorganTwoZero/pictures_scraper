@@ -33,7 +33,7 @@ const post = defineProps({
 })
 
 function PixivLink(post) {
-    post.post.preview_link = post.post.post_link.replace('net', 'sbs') + '.jpg?is_big=false'
+    post.post.preview_link = post.post.post_link.replace('net', 'sbs') + '?is_big=false'
 }
 
 const created = computed(() => {
@@ -46,7 +46,7 @@ function toClipboard(e) {
         if (post.post.post_link.startsWith('https://twitter.com/')) {
             text = `<${post.post.post_link}> ${post.post.preview_link}?name=orig`;
         } else if (post.post.post_link.startsWith('https://www.pixiv.net')) {
-            text = post.post.post_link.replace('net', 'sbs') + '.jpg';
+            text = post.post.post_link.replace('net', 'sbs');
         } else {
             /* Delete everything after '?.' */
             text = `<${post.post.post_link}> ${post.post.preview_link.replace(/\?.*/, '')}`;

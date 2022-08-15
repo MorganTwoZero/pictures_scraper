@@ -3,9 +3,12 @@ from typing import NamedTuple
 import logging
 
 from fastapi import APIRouter, Request, Response, HTTPException
+from fastapi.responses import RedirectResponse, HTMLResponse
 
 from utils.pixiv_proxy_image import pixiv_proxy_image
 
+
+SITE_URL = 'https://www.pixiv.sbs/en/artworks'
 
 router = APIRouter(
     prefix="/en/artworks",
@@ -39,7 +42,7 @@ def parse_post_id(requested_id: str) -> ParsedPostId:
 
     return ParsedPostId(int(requested_id), 0)
 
-@router.get('/{requested_id}.jpg', response_class=Response)
+@router.get('/{requested_id}.jpg')
 async def img(request: Request, requested_id: str, is_big: bool | None = None):
     '''Check if a user is accessing the embed from a discord client, 
     if so, send small image, else send is_big image. By default return small pic.'''
@@ -69,3 +72,37 @@ async def img(request: Request, requested_id: str, is_big: bool | None = None):
         raise HTTPException(404, 'Post not found, probably wrong id')
 
     return Response(content=image, media_type="image")
+
+@router.get('/{requested_id}.json')
+async def redirect(request: Request, requested_id: str):
+    #return RedirectResponse(str(request.url) + '.jpg')
+
+    json = {
+            "type": "image/jpeg",
+            "url": SITE_URL+'/{requested_id}.jpg'.format(requested_id=requested_id)
+        }
+    return json
+
+@router.get('/{requested_id}')
+def html(request: Request, requested_id: str):
+    '''Check if a user is accessing the embed from a discord client,
+    if not (i.e. directly from a browser) then redirect to the .jpg version.'''
+
+    logger.debug(
+        "Embed requested, requested_id={}, user_agent={}".format(requested_id,request.headers.get('user-agent'))
+    )
+
+    if not _discord(request):
+        return RedirectResponse(url=SITE_URL+'/{requested_id}.jpg'.format(requested_id=requested_id))
+
+    html = '''
+        <html>
+            <head>
+                <link type="application/json+oembed" href="{SITE_URL}/{requested_id}.json"/>
+                <meta name="twitter:card" content="summary_large_image">
+                <meta name="twitter:image" content="{SITE_URL}/{requested_id}.jpg">
+            </head>
+        </html>
+    '''.format(requested_id=requested_id, SITE_URL=SITE_URL)
+
+    return HTMLResponse(content=html)
