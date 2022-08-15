@@ -33,7 +33,7 @@ const post = defineProps({
 })
 function PixivLink(post) {
     if (post.post.post_link.startsWith('https://www.pixiv.net')) {
-        post.post.preview_link = `${process.env.VUE_APP_BACKEND_URL}/embed/${post.post.post_link.slice(-9)}.jpg?is_big=false`
+        post.post.preview_link = `https://www.pixiv.sbs/en/artworks/${post.post.post_link.slice(-9)}.jpg?is_big=false`
     }
 }
 
@@ -47,7 +47,7 @@ function toClipboard(e) {
         if (post.post.post_link.startsWith('https://twitter.com/')) {
             text = `<${post.post.post_link}> ${post.post.preview_link}?name=orig`;
         } else if (post.post.post_link.startsWith('https://www.pixiv.net')) {
-            text = `https://pixiv.sbs/api/embed/${post.post.post_link.slice(-9)}`;
+            text = `https://www.pixiv.sbs/en/artworks/${post.post.post_link.slice(-9)}`;
         } else {
             text = `<${post.post.post_link}> ${post.post.preview_link.replace(/\?.*/, '')}`;
         }
