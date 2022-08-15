@@ -16,7 +16,7 @@ LOGGING_CONFIG = {
         'logfile': {  # The handler name
             'formatter': 'default_formatter',  # Refer to the formatter defined above
             'class': 'logging.handlers.RotatingFileHandler',  # OUTPUT: Which class to use
-            'filename': '.log',  # Param for class above. Defines filename to use, load it from constant
+            'filename': 'log.txt',  # Param for class above. Defines filename to use, load it from constant
             'backupCount': 2,  # Param for class above. Defines how many log files to keep as it grows
         },
     },
