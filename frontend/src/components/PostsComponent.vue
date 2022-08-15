@@ -47,7 +47,7 @@ function toClipboard(e) {
         if (post.post.post_link.startsWith('https://twitter.com/')) {
             text = `<${post.post.post_link}> ${post.post.preview_link}?name=orig`;
         } else if (post.post.post_link.startsWith('https://www.pixiv.net')) {
-            text = `https://honkai-pictures.ru/api/embed/${post.post.post_link.slice(-9)}`;
+            text = `https://pixiv.sbs/api/embed/${post.post.post_link.slice(-9)}`;
         } else {
             text = `<${post.post.post_link}> ${post.post.preview_link.replace(/\?.*/, '')}`;
         }
