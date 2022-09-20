@@ -34,4 +34,4 @@ def parse(db, posts):
                         author_profile_image=None,
                         ),
                     db)
-        logger.info('Twitter updated')
+        logger.debug('Twitter updated')

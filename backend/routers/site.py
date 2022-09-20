@@ -36,12 +36,12 @@ async def save_honkai(db):
 
 last_update = datetime.now(tz=timezone.utc)
 async def update(db: Session):
-    logger.info('Update started')
+    logger.debug('Update started')
 
     try:
         await save_homeline(db)
         await save_honkai(db)
-        logger.info('Update ended')
+        logger.debug('Update ended')
     except:
         logger.exception('error')
 

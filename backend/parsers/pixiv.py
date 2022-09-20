@@ -34,4 +34,4 @@ def parse(db, posts):
                     author_link=f"{AUTHOR_LINK_TEMPLATE + str(post['author_details']['user_id'])}",
                     ),
                 db)
-        logger.info('Pixiv updated')
+        logger.debug('Pixiv updated')

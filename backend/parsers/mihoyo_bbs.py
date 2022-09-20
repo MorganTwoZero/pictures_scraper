@@ -30,4 +30,4 @@ def parse(db, posts):
                 author_profile_image=post['user']['avatar_url'],
                     ),
                 db)
-        logger.info('Mihoyo updated')
+        logger.debug('Mihoyo updated')
