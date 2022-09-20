@@ -32,4 +32,4 @@ def parse(db, htmls):
                     post_link=item.find(class_='isayc').attrs['href'],
                     ),
                 db)
-    logger.info('Lofter updated')
+    logger.debug('Lofter updated')

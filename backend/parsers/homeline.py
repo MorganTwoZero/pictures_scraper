@@ -38,4 +38,4 @@ def parse(
                 )
                 save_post_many_users(db, post, user)
 
-    logger.info('Homeline updated')
+    logger.debug('Homeline updated')

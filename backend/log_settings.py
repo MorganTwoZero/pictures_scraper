@@ -23,17 +23,17 @@ LOGGING_CONFIG = {
     'loggers': {
         'routers': {
             'handlers': ['stream_handler', 'logfile'],
-            'level': 'DEBUG',
+            'level': 'INFO',
             'propagate': True
         },
         'parsers': {
             'handlers': ['stream_handler', 'logfile'],
-            'level': 'DEBUG',
+            'level': 'INFO',
             'propagate': True
         },
         'uvicorn': {
             'handlers': ['stream_handler', 'logfile'],
-            'level': 'DEBUG',
+            'level': 'INFO',
             'propagate': True
         },
     }
