@@ -1,4 +1,4 @@
-from typing import Iterable
+from typing import Any, Iterable, cast
 from sqlalchemy.orm import Session
 
 from db.models import User as UserModel, Settings as SettingsModel
@@ -33,12 +33,11 @@ def get_user_with_twitter(
     username: str, db: Session
     ) -> UserWithTwitter:
 
-    q = db.query(UserModel, SettingsModel).filter(
+    user_in_db = db.query(UserModel, SettingsModel).filter(
         SettingsModel.user == username,
         ).join(UserModel).first()
-    assert q
-
-    user_in_db: tuple[UserInDB, SettingsScheme] = q
+    user_in_db = cast(tuple[UserInDB, SettingsScheme], user_in_db)
+    user_in_db[1].twitter_header = cast(str, user_in_db[1].twitter_header)
 
     user_with_twitter = UserWithTwitter(
         username=user_in_db[0].username,
@@ -49,7 +48,7 @@ def get_user_with_twitter(
 
 def get_settings(username: str, db: Session) -> SettingsScheme:
     settings = db.query(SettingsModel).filter_by(user=username).first()
-    assert settings
+    settings = cast(SettingsScheme, settings)
     return settings
 
 def get_user_by_username(
