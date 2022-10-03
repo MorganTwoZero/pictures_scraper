@@ -39,8 +39,6 @@ def get_user_with_twitter(
     assert q
 
     user_in_db: tuple[UserInDB, SettingsScheme] = q
-    assert isinstance(user_in_db[0], UserInDB)
-    assert isinstance(user_in_db[1].twitter_header, str)
 
     user_with_twitter = UserWithTwitter(
         username=user_in_db[0].username,
