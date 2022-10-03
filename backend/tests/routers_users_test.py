@@ -232,7 +232,7 @@ def test_users_cookie_httponly(
 
     for cookie in login.cookies:
         if cookie.name == 'Authorization':
-            assert 'HttpOnly' in cookie._rest
+            assert 'HttpOnly' in cookie._rest  # type: ignore
 
 def test_users_cookie_secure(
     create_user, login: Response, client: TestClient):

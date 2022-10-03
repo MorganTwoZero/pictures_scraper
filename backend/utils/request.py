@@ -54,7 +54,7 @@ async def request_honkai() -> RequestResults:
     for url, header in zip_longest(urls, headers, fillvalue=''):
         tasks.append(asyncio.ensure_future(_get(client, url, header)))
 
-    responses: tuple[httpx.Response] = await asyncio.gather(*tasks)
+    responses = await asyncio.gather(*tasks)
     await client.aclose()
 
     results = results_to_sources(responses)
@@ -79,7 +79,7 @@ async def request_homeline(
                 )
             )
 
-    responses: tuple[httpx.Response] = await asyncio.gather(*tasks)
+    responses = await asyncio.gather(*tasks)
     await client.aclose()
 
     return [i for i in zip(users, responses)]

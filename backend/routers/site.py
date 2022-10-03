@@ -61,7 +61,7 @@ def honkai_posts(
         request: Request,
         db: Session = Depends(get_db),
         page: int = 1, 
-        offset: int = 5
+        offset: int = 20
     ):
 
     logger.debug(f'Honkai posts requested, URL: {request.url}')
@@ -73,7 +73,7 @@ async def homeline_posts(
         request: Request,
         db: Session = Depends(get_db),
         page: int = 1, 
-        offset: int = 5
+        offset: int = 20
     ):
 
     logger.debug(f'Myfeed requested, URL: {request.url}')
