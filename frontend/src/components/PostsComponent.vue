@@ -37,8 +37,9 @@ function PixivLink(post) {
 }
 
 function LofterLink(post) {
-    post.post.post_link = "https://www.pixiv.sbs/api/lofter/${post.post.post_link}"
-    post.post.author_profile_image = "https://www.pixiv.sbs/api/lofter/${post.post.author_profile_image}"
+    post.post.preview_link = "https://www.pixiv.sbs/api/lofter/?lofter_link=" + post.post.preview_link.slice(0, post.post.preview_link.search("imageView")-1)
+
+    post.post.author_profile_image = "https://www.pixiv.sbs/api/lofter/?lofter_link=" + post.post.author_profile_image.slice(0, post.post.author_profile_image.search("imageView")-1)
 }
 
 const created = computed(() => {
