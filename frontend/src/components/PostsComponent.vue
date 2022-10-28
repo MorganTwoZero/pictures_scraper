@@ -56,7 +56,7 @@ function toClipboard(e) {
         } else if (post.post.post_link.startsWith('https://www.pixiv.net')) {
             text = post.post.post_link.replace('net', 'sbs');
         } else if (post.post.post_link.search("lofter") != -1) {
-            text = post.post.clipboard_link;
+            text = `${post.post.post_link} ${post.post.clipboard_link.replace(/\?.*/, '')}`;
         } else {
             /* Delete everything after '?.' */
             text = `<${post.post.post_link}> ${post.post.preview_link.replace(/\?.*/, '')}`;
