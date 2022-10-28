@@ -108,7 +108,7 @@ async def like(
         'twitter_json': r.json()
         }
 
-@router.get("/lofter/{lofter_link:str}")
+@router.get("/lofter")
 async def lofter_link(lofter_link: str) -> Response:
     logger.debug('Lofter img requested, link={}'.format(lofter_link))
     image = await lofter_proxy(lofter_link)
