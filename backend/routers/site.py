@@ -2,8 +2,8 @@ from datetime import datetime, timezone
 from typing import Sequence
 import logging
 
-from httpx import Response
-from fastapi import APIRouter, Depends, Request
+import httpx
+from fastapi import APIRouter, Depends, Request, Response
 from sqlalchemy.orm import Session
 
 from db.schemas import PostScheme, UserWithTwitter, UserInDB
@@ -101,7 +101,7 @@ async def like(
     user_in_db: UserInDB = get_current_user(request, db)
     user: UserWithTwitter = get_user_with_twitter(user_in_db.username, db)
 
-    r: Response = await like_request(post_id, user)
+    r: httpx.Response = await like_request(post_id, user)
 
     return {
         'status': r.status_code,
@@ -109,6 +109,7 @@ async def like(
         }
 
 @router.get("/lofter/{lofter_link:str}")
-async def lofter_link(lofter_link: str) -> bytes:
+async def lofter_link(lofter_link: str) -> Response:
     logger.debug('Lofter img requested, link={}'.format(lofter_link))
-    return await lofter_proxy(lofter_link)
+    image = await lofter_proxy(lofter_link)
+    return Response(content=image, media_type="image")
