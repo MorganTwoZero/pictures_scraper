@@ -98,13 +98,12 @@ def results_to_sources(
     return results
 
 async def pixiv_proxy(url) -> httpx.Response:
-
     header=PIXIV_HEADER
     header.update({'Referer': 'https://www.pixiv.net/'})
     client = httpx.AsyncClient()
 
-    response = await _get(client, url, header)
-    await client.aclose()
+    async with client:
+        response = await _get(client, url, header)
 
     return response
 
@@ -112,21 +111,19 @@ async def like_request(
     post_id: int, 
     user: UserWithTwitter,
     ) -> httpx.Response:
-
     client = httpx.AsyncClient()
     url = TWITTER_LIKE_URL + str(post_id)
     header = ast.literal_eval(user.twitter_header)
 
-    response = await client.post(url, headers=header, timeout=20)
-    await client.aclose()
+    async with client:
+        response = await client.post(url, headers=header, timeout=20)
 
     return response
 
 async def lofter_proxy(url) -> bytes:
     client = httpx.AsyncClient()
-    response: httpx.Response
 
-    async with client as client:
-        response = await client.get(url)
+    async with client:
+        response = await _get(client, url)
 
     return response.content

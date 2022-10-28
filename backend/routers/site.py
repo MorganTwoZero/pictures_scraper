@@ -109,7 +109,15 @@ async def like(
         }
 
 @router.get("/lofter")
-async def lofter_link(lofter_link: str) -> Response:
+async def lofter_link(lofter_link: str, preview: bool) -> Response:
     logger.debug('Lofter img requested, link={}'.format(lofter_link))
-    image = await lofter_proxy(lofter_link)
+
+    main_pic_preview = "?imageView&thumbnail=500x0&quality=96"
+    author_avatar_preview = "?imageView&thumbnail=60x60&quality=90&type=jpg"
+
+    if preview:
+        image = await lofter_proxy(lofter_link+main_pic_preview)
+    else:
+        image = await lofter_proxy(lofter_link+author_avatar_preview)
+        
     return Response(content=image, media_type="image")
