@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from db.schemas import PostScheme, UserWithTwitter, UserInDB
 from dependency import get_db
 from parsers import twitter_honkai, lofter, pixiv, mihoyo_bbs, homeline
-from utils.request import request_honkai, request_homeline, like_request
+from utils.request import request_honkai, request_homeline, like_request, lofter_proxy
 from utils.crud.users import get_all_users_with_twitter, get_user_with_twitter
 from utils.crud.posts import get_posts, my_feed_db_get
 from settings import settings
@@ -107,3 +107,8 @@ async def like(
         'status': r.status_code,
         'twitter_json': r.json()
         }
+
+@router.get("/lofter/{lofter_link:str}")
+async def lofter_link(lofter_link: str) -> bytes:
+    logger.debug('Lofter img requested, link={}'.format(lofter_link))
+    return await lofter_proxy(lofter_link)

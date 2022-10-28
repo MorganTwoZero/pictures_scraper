@@ -121,3 +121,12 @@ async def like_request(
     await client.aclose()
 
     return response
+
+async def lofter_proxy(url) -> bytes:
+    client = httpx.AsyncClient()
+    response: httpx.Response
+
+    async with client as client:
+        response = await client.get(url)
+
+    return response.content

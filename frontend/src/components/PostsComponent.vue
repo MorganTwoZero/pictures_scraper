@@ -57,7 +57,12 @@ function toClipboard(e) {
 onBeforeMount(() => {
     if (post.post.post_link.startsWith('https://www.pixiv.net')) {
         PixivLink(post)
-    }
+    };
+
+    if (post.post.post_link.search("lofter") != -1) {
+        post.post.post_link = "https://www.pixiv.sbs/api/lofter/${post.post.post_link}";
+        post.post.author_profile_image = "https://www.pixiv.sbs/api/lofter/${post.post.author_profile_image}";
+    };
 })
 </script>
 
