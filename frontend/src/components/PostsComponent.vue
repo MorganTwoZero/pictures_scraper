@@ -37,6 +37,8 @@ function PixivLink(post) {
 }
 
 function LofterLink(post) {
+    post.post.clipboard_link = post.post.preview_link
+
     post.post.preview_link = "https://pixiv.sbs/api/lofter?lofter_link=" + post.post.preview_link.slice(0, post.post.preview_link.search("imageView")-1)
 
     post.post.author_profile_image = "https://pixiv.sbs/api/lofter?lofter_link=" + post.post.author_profile_image.slice(0, post.post.author_profile_image.search("imageView")-1)
@@ -53,6 +55,8 @@ function toClipboard(e) {
             text = `<${post.post.post_link}> ${post.post.preview_link}?name=orig`;
         } else if (post.post.post_link.startsWith('https://www.pixiv.net')) {
             text = post.post.post_link.replace('net', 'sbs');
+        } else if (post.post.post_link.search("lofter") != -1) {
+            text = post.post.clipboard_link;
         } else {
             /* Delete everything after '?.' */
             text = `<${post.post.post_link}> ${post.post.preview_link.replace(/\?.*/, '')}`;
