@@ -16,21 +16,15 @@ services:
 
   frontend:
     build: ./frontend
-    volumes:
-      - './frontend:/app'
-      - '/app/node_modules'
     environment:
       - VUE_APP_BACKEND_URL=https://pixiv.sbs/api
-    command: npm run build
 
   nginx:
     image: nginx:alpine
-    depends_on:
-      - frontend
     ports:
       - 80:80
       - 443:443
     volumes:
       - './nginx/nginx.conf:/etc/nginx/nginx.conf'
-      - './frontend/dist:/app'      
-      - './certs:/certs:ro'
+      - './frontend/dist:/app'
+      - './certs:/certs'
