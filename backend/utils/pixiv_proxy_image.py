@@ -16,7 +16,7 @@ async def pixiv_proxy_image(post_id: int, pic_num: int, is_big: bool) -> bytes |
         raise HTTPException(status_code=500, detail="Request error")
 
     post = post.json().get('body')
-    if not 'illust_details' in post:
+    if 'illust_details' not in post:
         return None
         
     post = post.get('illust_details')

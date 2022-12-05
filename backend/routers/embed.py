@@ -51,7 +51,7 @@ async def img(request: Request, requested_id: str, is_big: bool | None = None):
         "Image requested, requested_id={}, user_agent={}".format(requested_id,request.headers.get('user-agent'))
     )
 
-    if is_big == None:
+    if is_big is None:
         is_big = True
     
     if _discord(request):

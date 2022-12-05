@@ -1,4 +1,4 @@
-from typing import Any, Iterable, cast
+from typing import Iterable, cast
 from sqlalchemy.orm import Session
 
 from db.models import User as UserModel, Settings as SettingsModel
@@ -13,13 +13,13 @@ def get_all_users_with_twitter(
 
     q: Iterable[tuple[UserInDB, SettingsScheme]] = db.query(
         UserModel, SettingsModel).filter(
-        SettingsModel.twitter_header != None,
+        SettingsModel.twitter_header is not None,
         ).join(UserModel).all()
 
     users: Iterable[UserWithTwitter] = []
 
     for user, settings in q:
-        if settings.twitter_header == '':
+        if settings.twitter_header == '' or settings.twitter_header is None:
             continue
         
         users.append(UserWithTwitter(

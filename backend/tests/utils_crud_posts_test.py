@@ -5,7 +5,6 @@ from sqlalchemy.orm import Session
 from fastapi.testclient import TestClient
 
 from utils.crud import posts
-from db.models import Post as PostModel, TwitterFeedPost
 from db.schemas import PostScheme, User as UserScheme
 
 
@@ -44,7 +43,7 @@ def test_db_posts_save_post(db_session: Session):
 
 def test_db_posts_unique_check(db_session: Session):
     posts.save_to_db(PostScheme(**post), db_session)
-    assert posts.save_to_db(PostScheme(**post), db_session) == None
+    assert posts.save_to_db(PostScheme(**post), db_session) is None
 
 def test_db_posts_save_post_many_users(user, db_session: Session):
     

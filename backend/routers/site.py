@@ -12,7 +12,6 @@ from parsers import twitter_honkai, lofter, pixiv, mihoyo_bbs, homeline
 from utils.request import request_honkai, request_homeline, like_request, lofter_proxy
 from utils.crud.users import get_all_users_with_twitter, get_user_with_twitter
 from utils.crud.posts import get_posts, my_feed_db_get
-from settings import settings
 from security import get_current_user
 
 

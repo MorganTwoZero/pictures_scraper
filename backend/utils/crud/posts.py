@@ -62,7 +62,7 @@ def save_post_many_users(
         db.refresh(db_post)
         return db_post
 
-    if not user_in_db in post_in_db.users:
+    if user_in_db not in post_in_db.users:
         post_in_db.users.append(user_in_db)
         db.commit()
         db.refresh(post_in_db)
