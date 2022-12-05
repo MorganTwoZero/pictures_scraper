@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from db.schemas import PostScheme, UserWithTwitter, UserInDB
 from dependency import get_db
-from parsers import twitter_honkai, lofter, pixiv, mihoyo_bbs, homeline
+from parsers import twitter_honkai, lofter, pixiv, mihoyo_bbs, homeline, bcy
 from utils.request import request_honkai, request_homeline, like_request, lofter_proxy
 from utils.crud.users import get_all_users_with_twitter, get_user_with_twitter
 from utils.crud.posts import get_posts, my_feed_db_get
@@ -30,7 +30,8 @@ async def save_honkai(db):
     posts = await request_honkai()
     twitter_honkai.parse(db, posts.twitter_honkai)        
     pixiv.parse(db, posts.pixiv)
-    mihoyo_bbs.parse(db, posts.bbs_mihoyo)        
+    mihoyo_bbs.parse(db, posts.bbs_mihoyo)
+    bcy.parse(db, posts.bcy)      
     lofter.parse(db, posts.lofter)
 
 last_update = datetime.now(tz=timezone.utc)

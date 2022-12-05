@@ -21,8 +21,9 @@ LOFTER_TAGS = '崩坏3 符华 琪亚娜 丽塔 崩坏三 崩坏3rd 雷电芽衣'
 PIXIV_HEADER: dict[str, str] = ast.literal_eval(settings.PIXIV_HEADER)
 TWITTER_HEADER: dict[str, str] = ast.literal_eval(settings.TWITTER_HEADER)
 TWITTER_LIKE_URL = 'https://api.twitter.com/1.1/favorites/create.json?id='
+BCY_URL = "https://bcy.net/apiv3/common/circleFeed?circle_id=109315&since=0&sort_type=2&grid_type=10"
 
-urls = [PIXIV_URL, TWITTER_SEARCH_URL, MIHOYO_URL]
+urls = [PIXIV_URL, TWITTER_SEARCH_URL, MIHOYO_URL, BCY_URL]
 headers = [PIXIV_HEADER, TWITTER_HEADER]
 
 for tag in LOFTER_TAGS.split(' '):
@@ -92,7 +93,8 @@ def results_to_sources(
         twitter_honkai = list(results_list[1].json(
             )['globalObjects']['tweets'].values()),
         bbs_mihoyo = results_list[2].json()['data']['list'],
-        lofter = [result.text for result in results_list[3:]],
+        bcy = results_list[3].json()['data']['items'],
+        lofter = [result.text for result in results_list[4:]]
     )
     
     return results

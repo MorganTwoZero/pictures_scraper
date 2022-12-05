@@ -47,3 +47,4 @@ class RequestResults(BaseModel):
     twitter_honkai: list[dict] | None
     bbs_mihoyo: list[dict] | None
     lofter: list[str | None]
+    bcy: list[dict]
