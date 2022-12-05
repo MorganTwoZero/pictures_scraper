@@ -1,4 +1,4 @@
-FROM node:lts-alpine
+FROM node:lts-alpine as frontend
 
 WORKDIR /app
 
@@ -11,4 +11,11 @@ RUN npm install
 
 COPY ./src ./src
 
+ARG VUE_APP_BACKEND_URL
+ENV VUE_APP_BACKEND_URL=$VUE_APP_BACKEND_URL
+
 RUN npm run build
+
+FROM nginx:alpine
+
+COPY --from=frontend /app/dist /app
