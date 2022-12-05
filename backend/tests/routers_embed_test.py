@@ -3,9 +3,10 @@ import pytest
 from fastapi.testclient import TestClient
 
 from routers.embed import parse_post_id
+from settings import settings
 
 
-SITE_URL = 'https://www.pixiv.sbs/en/artworks'
+SITE_URL = settings.SITE_URL + '/en/artworks'
 
 @pytest.mark.vcr
 def test_embed(client: TestClient):

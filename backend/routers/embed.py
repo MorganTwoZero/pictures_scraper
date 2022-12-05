@@ -6,9 +6,10 @@ from fastapi import APIRouter, Request, Response, HTTPException
 from fastapi.responses import RedirectResponse, HTMLResponse
 
 from utils.pixiv_proxy_image import pixiv_proxy_image
+from settings import settings
 
 
-SITE_URL = 'https://www.pixiv.sbs/en/artworks'
+SITE_URL = settings.SITE_URL + '/en/artworks'
 
 router = APIRouter(
     prefix="/en/artworks",

@@ -29,7 +29,7 @@ app.include_router(embed_router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        settings.FRONTEND_URL,
+        settings.SITE_URL,
         ],
     allow_credentials=True,
     allow_methods=["GET", "POST"],

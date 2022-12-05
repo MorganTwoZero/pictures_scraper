@@ -10,7 +10,7 @@ services:
     env_file:
       - .env 
     environment:
-      - FRONTEND_URL=https://pixiv.sbs
+      - SITE_URL=https://pixiv.sbs
 
   frontend:
     build:
