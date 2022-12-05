@@ -42,8 +42,8 @@ async def update(db: Session):
         await save_homeline(db)
         await save_honkai(db)
         logger.debug('Update ended')
-    except:
-        logger.exception('error')
+    except httpx.TimeoutException:
+        pass
 
 @router.get("/update")
 async def start_update(db: Session = Depends(get_db)):
