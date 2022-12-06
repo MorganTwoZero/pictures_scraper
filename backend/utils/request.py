@@ -37,14 +37,15 @@ async def _get(
     ) -> httpx.Response:
     try:
         response = await client.get(url, headers=header, timeout=20)
-    except httpx.TimeoutException:
+    except (httpx.TimeoutException, httpx.ConnectError):
         '''Return empty response so that user wouldn't 
         get other user's response in request_homeline_many_users
         if some request fails'''
         response = httpx.Response(status_code=400, text='Request timeout')
-        logger.exception(
-            f'Request timeout, url={url}, header={header}'
+        logger.error(
+            f'Request timeout, URL: {url[:100]}'
             )
+        raise
     return response
 
 async def request_honkai() -> RequestResults:
