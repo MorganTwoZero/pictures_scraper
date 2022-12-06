@@ -21,7 +21,10 @@ Base.metadata.create_all(bind=engine) # type: ignore
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/token")
 
-app = FastAPI()
+if settings.SITE_URL == "http://localhost:8080":
+    app = FastAPI() # prod
+else:
+    app = FastAPI(docs_url=None, redoc_url=None) # dev
 app.include_router(site_router)
 app.include_router(users_router)
 app.include_router(embed_router)
