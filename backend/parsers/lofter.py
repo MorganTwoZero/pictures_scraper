@@ -21,6 +21,12 @@ def parse(db, htmls):
 
             for item in soup.find_all(class_='m-mlist'):
                 if 'data-type' in item.attrs and item.find(class_='imgc'):
+
+                    if item.find(class_='totalnum'):
+                        pic_num = int(item.find(class_='totalnum').string)
+                    else:
+                        pic_num = 1
+
                     save_to_db(PostScheme(
                     author_link=item.find(class_='w-img ptag').a.attrs['href'],
                     author=item.find(class_='w-img ptag').a.attrs['title'],
@@ -30,6 +36,8 @@ def parse(db, htmls):
                         int(item.find(class_='isayc').attrs['data-time'][:-3])
                         ) + timedelta(hours=TIMEZONE),
                     post_link=item.find(class_='isayc').attrs['href'],
+                    images_number=pic_num
                     ),
                 db)
+
     logger.debug('Lofter updated')
