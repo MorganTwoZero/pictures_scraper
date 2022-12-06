@@ -7,7 +7,7 @@ from jose import JWTError, jwt
 from db.schemas import UserInDB
 import utils.crud.users as users
 from settings import settings
-from exceptions import credentials_exception
+from exceptions import CredentialsException
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -19,9 +19,9 @@ def verify_token(token):
         username = payload.get("sub")
         assert isinstance(username, str)
         if username is None:
-            raise credentials_exception
+            raise CredentialsException
     except JWTError:
-        raise credentials_exception
+        raise CredentialsException
     return username
 
 def create_access_token(data: dict, 
@@ -45,14 +45,14 @@ def verify_password(plain_password: str, user: UserInDB) -> bool:
 def get_current_user(request: Request, db) -> UserInDB:
     token = request.cookies.get('Authorization')
     if not token:
-        raise credentials_exception
+        raise CredentialsException
 
     username = verify_token(token)
     if not username:
-        raise credentials_exception
+        raise CredentialsException
 
     user = users.get_user_by_username(username, db)
     if not user:
-        raise credentials_exception
+        raise CredentialsException
         
     return user

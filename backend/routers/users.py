@@ -5,11 +5,9 @@ from fastapi import APIRouter, Depends, Form, \
 from sqlalchemy.orm import Session
 
 from db.schemas import UserFront, Settings as SettingsScheme
-from dependency import get_db
-from exceptions import credentials_exception
-from security import create_access_token, \
-                    verify_password, \
-                    get_current_user
+import deps
+from exceptions import CredentialsException
+import security
 from settings import settings
 from utils.crud import users
 
@@ -23,7 +21,7 @@ router = APIRouter(
 def register(
     username: str = Form(default=None, max_length=50), 
     password: str = Form(default=None, max_length=50), 
-    db: Session = Depends(get_db)
+    db: Session = Depends(deps.get_db)
     ):
     
     user = UserFront(username=username, password=password)
@@ -41,20 +39,20 @@ async def login(
     response: Response,
     username: str = Form(default=None, max_length=50), 
     password: str = Form(default=None, max_length=50), 
-    db: Session = Depends(get_db)
+    db: Session = Depends(deps.get_db)
     ):
         
     user = users.get_user_by_username(username, db)
     if not user:
-        raise credentials_exception
+        raise CredentialsException
 
-    correct_password = verify_password(password, user)
+    correct_password = security.verify_password(password, user)
     if not correct_password:
-        raise credentials_exception
+        raise CredentialsException
 
     access_token_expires = timedelta(
         minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token: str = create_access_token(
+    access_token: str = security.create_access_token(
         data={"sub": user.username}, 
         expires_delta=access_token_expires
         )
@@ -96,10 +94,10 @@ async def logout(response: Response):
 @router.get("/user", response_model=SettingsScheme)
 async def get_settings(
     request: Request,
-    db: Session = Depends(get_db)
+    db: Session = Depends(deps.get_db)
     ):
 
-    user = get_current_user(request, db)
+    user = security.get_current_user(request, db)
     settings = users.get_settings(user.username, db)
     return settings
     
@@ -107,10 +105,10 @@ async def get_settings(
 def update_settings(
     settings_form: SettingsScheme,
     request: Request,
-    db: Session = Depends(get_db)
+    db: Session = Depends(deps.get_db)
     ):
 
-    user = get_current_user(request, db)
+    user = security.get_current_user(request, db)
 
     if not settings_form.user == user.username:
         raise HTTPException(

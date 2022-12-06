@@ -16,7 +16,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from db.schemas import UserWithTwitter
 from settings import settings
 from db.base_class import Base
-from dependency import get_db
+import deps
 from routers.embed import router as embed_router
 from routers.site import router as site_router
 from routers.users import router as users_router
@@ -86,7 +86,7 @@ def client(
         finally:
             pass
 
-    app.dependency_overrides[get_db] = _get_test_db
+    app.dependency_overrides[deps.get_db] = _get_test_db
     with TestClient(app) as client:
         yield client
 

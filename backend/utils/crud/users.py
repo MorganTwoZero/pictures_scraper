@@ -7,7 +7,7 @@ from db.schemas import UserFront, UserWithTwitter, \
 from security import hash_password
 from utils.crud.base import unique
 
-def get_all_users_with_twitter(
+def get_twitter_users(
     db: Session
     ) -> Iterable[UserWithTwitter]:
 

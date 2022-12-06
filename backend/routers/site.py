@@ -7,12 +7,10 @@ from fastapi import APIRouter, Depends, Request, Response
 from sqlalchemy.orm import Session
 
 from db.schemas import PostScheme, UserWithTwitter, UserInDB
-from dependency import get_db
+import deps
 import parsers
-from utils.request import request_honkai, request_homeline, like_request, lofter_proxy
-from utils.crud.users import get_all_users_with_twitter, get_user_with_twitter
-from utils.crud.posts import get_posts, my_feed_db_get
-from security import get_current_user
+from utils import request, crud
+import security
 
 
 logger = logging.getLogger(__name__)
@@ -22,12 +20,12 @@ router = APIRouter(
     tags=["site"],
 )
 async def save_homeline(db):
-    users = get_all_users_with_twitter(db)
-    posts =  await request_homeline(users)
+    users = crud.users.get_twitter_users(db)
+    posts =  await request.request_homeline(users)
     parsers.homeline.parse(db, posts)
 
 async def save_honkai(db):
-    posts = await request_honkai()
+    posts = await request.request_honkai()
     parsers.twitter_honkai.parse(db, posts.twitter_honkai)        
     parsers.pixiv.parse(db, posts.pixiv)
     parsers.mihoyo_bbs.parse(db, posts.bbs_mihoyo)
@@ -46,7 +44,7 @@ async def update(db: Session):
         pass
 
 @router.get("/update")
-async def start_update(db: Session = Depends(get_db)):
+async def start_update(db: Session = Depends(deps.get_db)):
     await update(db)
     global last_update
     last_update = datetime.now(tz=timezone.utc)
@@ -59,49 +57,49 @@ async def update_time() -> datetime:
 @router.get("/honkai", response_model=Sequence[PostScheme])
 def honkai_posts(
         request: Request,
-        db: Session = Depends(get_db),
+        db: Session = Depends(deps.get_db),
         page: int = 1, 
         offset: int = 20
     ):
 
     logger.debug(f'Honkai posts requested, URL: {request.url}')
-    posts = get_posts(db, page, offset)
+    posts = crud.posts.get_posts(db, page, offset)
     return posts
 
 @router.get("/myfeed", response_model=Sequence[PostScheme])
 async def homeline_posts(
         request: Request,
-        db: Session = Depends(get_db),
+        db: Session = Depends(deps.get_db),
         page: int = 1, 
         offset: int = 20
     ):
 
     logger.debug(f'Myfeed requested, URL: {request.url}')
 
-    user_in_db: UserInDB = get_current_user(request, db)
-    user: UserWithTwitter = get_user_with_twitter(user_in_db.username, db)
+    user_in_db: UserInDB = security.get_current_user(request, db)
+    user: UserWithTwitter = crud.users.get_user_with_twitter(user_in_db.username, db)
     
     if user.twitter_header:
-        posts = my_feed_db_get(db, user, page, offset)
+        posts = crud.posts.my_feed_db_get(db, user, page, offset)
         return posts
     else:
         return 'Twitter header is not present'
 
 @router.get("/like")
 async def like(
-    request: Request,
+    rqst: Request,
     post_link: str,
-    db: Session = Depends(get_db)
+    db: Session = Depends(deps.get_db)
     ):
 
     logger.debug('Like requested, post link={}'.format(post_link))
 
     post_id: int = int(post_link[-20:-1])
 
-    user_in_db: UserInDB = get_current_user(request, db)
-    user: UserWithTwitter = get_user_with_twitter(user_in_db.username, db)
+    user_in_db: UserInDB = security.get_current_user(rqst, db)
+    user: UserWithTwitter = crud.users.get_user_with_twitter(user_in_db.username, db)
 
-    r: httpx.Response = await like_request(post_id, user)
+    r: httpx.Response = await request.like_request(post_id, user)
 
     return {
         'status': r.status_code,
@@ -116,8 +114,8 @@ async def lofter_link(lofter_link: str, preview: bool = False) -> Response:
     author_avatar_preview = "?imageView&thumbnail=60x60&quality=90&type=jpg"
 
     if preview:
-        image = await lofter_proxy(lofter_link+main_pic_preview)
+        image = await request.lofter_proxy(lofter_link+main_pic_preview)
     else:
-        image = await lofter_proxy(lofter_link+author_avatar_preview)
+        image = await request.lofter_proxy(lofter_link+author_avatar_preview)
         
     return Response(content=image, media_type="image")
