@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from db.schemas import PostScheme, UserWithTwitter, UserInDB
 import deps
-import parsers
+import services
 from utils import request, crud
 import security
 
@@ -19,39 +19,21 @@ router = APIRouter(
     prefix='/api',
     tags=["site"],
 )
-async def save_homeline(db):
-    users = crud.users.get_twitter_users(db)
-    posts =  await request.request_homeline(users)
-    parsers.homeline.parse(db, posts)
-
-async def save_honkai(db):
-    posts = await request.request_honkai()
-    parsers.twitter_honkai.parse(db, posts.twitter_honkai)        
-    parsers.pixiv.parse(db, posts.pixiv)
-    parsers.mihoyo_bbs.parse(db, posts.bbs_mihoyo)
-    parsers.bcy.parse(db, posts.bcy)       
-    parsers.lofter.parse(db, posts.lofter)
 
 last_update = datetime.now(tz=timezone.utc)
-async def update(db: Session):
-    logger.debug('Update started')
-
-    try:
-        await save_homeline(db)
-        await save_honkai(db)
-        logger.debug('Update ended')
-    except (httpx.TimeoutException, httpx.ConnectError):
-        pass
 
 @router.get("/update")
 async def start_update(db: Session = Depends(deps.get_db)):
-    await update(db)
-    global last_update
-    last_update = datetime.now(tz=timezone.utc)
+    await services.update(db)
+    set_update_time()
     return {'message': 'Updated'}
 
+def set_update_time():
+    global last_update
+    last_update = datetime.now(tz=timezone.utc)
+
 @router.get('/update/last_update')
-async def update_time() -> datetime:
+async def last_update_time() -> datetime:
     return last_update
 
 @router.get("/honkai", response_model=Sequence[PostScheme])
