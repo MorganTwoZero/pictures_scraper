@@ -13,15 +13,12 @@ def get_twitter_users(
 
     q: Iterable[tuple[UserInDB, SettingsScheme]] = db.query(
         UserModel, SettingsModel).filter(
-        SettingsModel.twitter_header is not None,
+        SettingsModel.twitter_header.isnot(None),
         ).join(UserModel).all()
 
     users: Iterable[UserWithTwitter] = []
 
     for user, settings in q:
-        if settings.twitter_header == '' or settings.twitter_header is None:
-            continue
-        
         users.append(UserWithTwitter(
             username=user.username,
             twitter_header=settings.twitter_header,
@@ -31,20 +28,19 @@ def get_twitter_users(
 
 def get_user_with_twitter(
     username: str, db: Session
-    ) -> UserWithTwitter:
+    ) -> UserWithTwitter | None:
 
     user_in_db = db.query(UserModel, SettingsModel).filter(
         SettingsModel.user == username,
+        SettingsModel.twitter_header.isnot(None),
         ).join(UserModel).first()
-    user_in_db = cast(tuple[UserInDB, SettingsScheme], user_in_db)
-    user_in_db[1].twitter_header = cast(str, user_in_db[1].twitter_header)
 
-    user_with_twitter = UserWithTwitter(
-        username=user_in_db[0].username,
-        twitter_header=user_in_db[1].twitter_header,
-    )
-
-    return user_with_twitter
+    if user_in_db is not None:
+        user_with_twitter = UserWithTwitter(
+            username=user_in_db[0].username,
+            twitter_header=user_in_db[1].twitter_header,
+        )        
+        return user_with_twitter
 
 def get_settings(username: str, db: Session) -> SettingsScheme:
     settings = db.query(SettingsModel).filter_by(user=username).first()

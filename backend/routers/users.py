@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Form, \
     HTTPException, Response, Request
 from sqlalchemy.orm import Session
 
-from db.schemas import UserFront, Settings as SettingsScheme
+from db.schemas import UserFront, Settings as SettingsScheme, SettingsPatch
 import deps
 from exceptions import CredentialsException
 import security
@@ -103,19 +103,17 @@ async def get_settings(
     
 @router.post("/settings")
 def update_settings(
-    settings_form: SettingsScheme,
+    settings_form: SettingsPatch,
     request: Request,
     db: Session = Depends(deps.get_db)
     ):
 
     user = security.get_current_user(request, db)
+    settings = SettingsScheme(
+        **settings_form.dict(),
+        user=user.username,
+    )
 
-    if not settings_form.user == user.username:
-        raise HTTPException(
-            status_code=400, 
-            detail='Wrong username'
-            )
-
-    users.update_settings(settings_form, db)
+    users.update_settings(settings, db)
 
     return {'message': 'Settings updated successfully'}

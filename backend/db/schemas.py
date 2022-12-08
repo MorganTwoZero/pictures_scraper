@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 
 class PostScheme(BaseModel):
@@ -33,14 +33,34 @@ class UserWithTwitter(User):
 class UserInDB(User):
     hashed_password: str
 
-class Settings(BaseModel):
-    user: str
+class SettingsBase(BaseModel):
     twitter_header: str | None = None
     authors_blacklist: str
     tags_blacklist: str
 
+    @validator('twitter_header')
+    def proper_header(cls, v):
+        if v is not None:
+            headers = [
+                'authorization',
+                'cookie',
+                'auth_token',
+                'ct0',
+                'Bearer',
+                'x-csrf-token',
+            ]
+            if not all(h in v for h in headers):
+                raise ValueError('Missing some value in header')
+        return v
+
+class Settings(SettingsBase):
+    user: str
+
     class Config:
         orm_mode = True
+
+class SettingsPatch(SettingsBase):
+    pass
 
 class RequestResults(BaseModel):
     pixiv: list[dict] | None

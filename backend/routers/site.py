@@ -2,11 +2,10 @@ from datetime import datetime, timezone
 from typing import Sequence
 import logging
 
-import httpx
 from fastapi import APIRouter, Depends, Request, Response
 from sqlalchemy.orm import Session
 
-from db.schemas import PostScheme, UserWithTwitter, UserInDB
+from db.schemas import PostScheme, UserInDB
 import deps
 import services
 from utils import request, crud
@@ -48,7 +47,7 @@ def honkai_posts(
     posts = crud.posts.get_posts(db, page, offset)
     return posts
 
-@router.get("/myfeed", response_model=Sequence[PostScheme])
+@router.get("/myfeed")
 async def homeline_posts(
         request: Request,
         db: Session = Depends(deps.get_db),
@@ -59,9 +58,9 @@ async def homeline_posts(
     logger.debug(f'Myfeed requested, URL: {request.url}')
 
     user_in_db: UserInDB = security.get_current_user(request, db)
-    user: UserWithTwitter = crud.users.get_user_with_twitter(user_in_db.username, db)
+    user = crud.users.get_user_with_twitter(user_in_db.username, db)
     
-    if user.twitter_header:
+    if user:
         posts = crud.posts.my_feed_db_get(db, user, page, offset)
         return posts
     else:
@@ -79,14 +78,15 @@ async def like(
     post_id: int = int(post_link[-20:-1])
 
     user_in_db: UserInDB = security.get_current_user(rqst, db)
-    user: UserWithTwitter = crud.users.get_user_with_twitter(user_in_db.username, db)
+    user = crud.users.get_user_with_twitter(user_in_db.username, db)
 
-    r: httpx.Response = await request.like_request(post_id, user)
+    if user:
+        r = await request.like_request(post_id, user)
 
-    return {
-        'status': r.status_code,
-        'twitter_json': r.json()
-        }
+        return {
+            'status': r.status_code,
+            'twitter_json': r.json()
+            }
 
 @router.get("/lofter")
 async def lofter_link(lofter_link: str, preview: bool = False) -> Response:
