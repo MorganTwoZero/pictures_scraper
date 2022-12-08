@@ -22,6 +22,7 @@
           </div>
         </div>
         <button type="submit">Submit</button>
+        <p v-if="showError.e" id="error">{{showError.detail}}</p>
       </form>
     </div>
   </div>
@@ -35,6 +36,11 @@ import { reactive } from 'vue'
 import { onMounted } from 'vue'
 
 const store = useStore()
+let showError = reactive({ 
+  e: false,
+  detail: '',
+})
+
 
 const form = reactive({
   user: store.user,
@@ -53,6 +59,11 @@ let user = reactive({
 function submit() {
   store.Settings(form).then(() => {
     fetchSettings()
+    showError.e = false;
+  }, error => {
+    console.log('error', error);
+    showError.e = true;
+    showError.detail = error.response.data.detail
   })
 }
 
