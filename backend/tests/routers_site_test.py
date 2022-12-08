@@ -2,7 +2,7 @@ import pytest
 from datetime import datetime, timezone
 from fastapi.testclient import TestClient
 
-from routers.site import start_update, update_time
+from routers.site import set_update_time, last_update_time
 from settings import settings
 
 
@@ -47,7 +47,7 @@ def test_site_like(
         )
 
     like = client.get(
-        '/api/like?post_link=https://twitter.com/djamilaknopf/status/1537470332772274176/',
+        '/api/like?post_link=https://twitter.com/cha_chya_/status/1600656404301328384/',
         cookies={
             'Authorization': login.cookies.get('Authorization')
         }    
@@ -88,7 +88,7 @@ def test_site_homeline(
 
 @pytest.mark.vcr
 async def test_last_update():
-    await start_update()
-    last_update = await update_time()
+    set_update_time()
+    last_update = await last_update_time()
     now = datetime.now(tz=timezone.utc)
     assert last_update == now

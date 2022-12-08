@@ -14,7 +14,7 @@ async def test_request_homeline(user_with_twitter):
     assert await request.request_homeline([user_with_twitter])
 
 def test_request_urls_list():
-    assert len(request.urls) == 3 + len(request.LOFTER_TAGS.split(' '))
+    assert len(request.urls) == 4 + len(request.LOFTER_TAGS.split(' '))
 
 @pytest.mark.vcr
 async def test_request_get():
@@ -38,7 +38,7 @@ async def test_request_pixiv_proxy():
 
 @pytest.mark.vcr
 async def test_request_like_request(user_with_twitter):
-    post_id = 1544781966993604608
+    post_id = 1600656404301328384
     like = await request.like_request(post_id, user_with_twitter)
 
     assert like.status_code == 403
