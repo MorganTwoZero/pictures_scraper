@@ -33,7 +33,7 @@ function submit() {
     store.Register(form).then(response => {
         console.log(response);
         showError.e = false;
-        router.push('/')
+        router.push('/login')
     }, error => {
         console.log('error', error);
         showError.e = true;
