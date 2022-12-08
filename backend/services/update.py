@@ -17,9 +17,10 @@ async def save_homeline(db):
         return
 
     for user, feed in feeds:
-        parsed = parsers.homeline.parse(feed.json())
-        for post in parsed:
-            crud.posts.save_post_many_users(db, post, user)
+        if feed.is_success:
+            parsed = parsers.homeline.parse(feed.json())
+            for post in parsed:
+                crud.posts.save_post_many_users(db, post, user)
     logger.debug('Homeline updated')
 
 async def save_honkai(db):
