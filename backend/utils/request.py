@@ -45,7 +45,6 @@ async def _get(
         logger.error(
             f'Request timeout, URL: {url[:100]}'
             )
-        raise
     return response
 
 async def request_honkai() -> RequestResults:
@@ -84,7 +83,7 @@ async def request_homeline(
     responses = await asyncio.gather(*tasks)
     await client.aclose()
 
-    return [i for i in zip(users, responses)]
+    return list(zip(users, responses))
 
 def results_to_sources(
     results_list: Sequence[httpx.Response]) -> RequestResults:
