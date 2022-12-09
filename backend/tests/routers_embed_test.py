@@ -1,54 +1,44 @@
+from typing import Any
+from typing import Generator
+
 import pytest
-
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
+from requests.structures import CaseInsensitiveDict
 
-from routers.embed import parse_post_id
 from settings import settings
+from routers.embed import router as embed_router
+from routers.embed import parse_post_id
+from main import app
+
+
+header = CaseInsensitiveDict(
+    {'user-agent': 'Mozilla/5.0 (compatible; Discordbot/2.0; +https://discordapp.com)'}
+    )
+
+@pytest.fixture(scope="function")
+def client(app: FastAPI) -> Generator[TestClient, Any, None]:
+    with TestClient(app) as client:
+        client.headers = header # type: ignore        
+        yield client
 
 
 SITE_URL = settings.SITE_URL + '/en/artworks'
 
 @pytest.mark.vcr
-def test_embed(client: TestClient):
-    response = client.get('/en/artworks/99083556')
-    assert response.status_code == 200
-    assert response.headers['content-type'] == 'image'
-
-@pytest.mark.vcr
-def test_embed_id_not_found(client: TestClient):
-    response = client.get('/en/artworks/990835560')
-    assert response.status_code == 404
-    assert response.json() == {'detail': 'Post not found, probably wrong id'}
+def test_embed_redirect(client: TestClient):
+    response = client.get(
+        '/en/artworks/99083556', 
+        headers={'user-agent': ''},
+        allow_redirects=False
+        )
+    assert response.is_redirect
 
 @pytest.mark.vcr
 def test_embed_id_not_int(client: TestClient):
     response = client.get('/en/artworks/9908355q')
-    assert response.status_code == 422
-    assert response.json() == {'detail': 'Post id or pic number is not an integer'}
-
-@pytest.mark.vcr
-def test_embed_discord(client: TestClient):
-    '''Test if the embed returns html with json for discord'''
-    response = client.get(
-        '/en/artworks/99083556',
-        headers={'user-agent': 'Mozilla/5.0 (compatible; Discordbot/2.0; +https://discordapp.com)'})
-    assert response.status_code == 200
-    assert response.headers['content-type'] == 'text/html; charset=utf-8'
-    assert response.text.startswith('\n        <html>')
-    assert response.text.endswith('</html>\n    ')
-    
-@pytest.mark.vcr
-def test_embed_json(client: TestClient):
-    '''Test for the correct json'''
-    response = client.get(
-        '/en/artworks/99083556.json',
-        headers={'user-agent': 'Mozilla/5.0 (compatible; Discordbot/2.0; +https://discordapp.com)'})
-    assert response.status_code == 200
-    assert response.headers['content-type'] == 'application/json'
-    assert response.json() == {
-            "type": "image/jpeg",
-            "url": SITE_URL+'/99083556.jpg'
-        }
+    assert response.status_code == 400
+    assert 'Cannot parse post id' in response.text
 
 @pytest.mark.parametrize('requested_id, post_id, pic_num', [
     ('99487795_p1', 99487795, 1),
