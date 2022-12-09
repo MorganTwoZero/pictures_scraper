@@ -69,5 +69,8 @@ def html(request: Request, requested_id: str) -> HTMLResponse | RedirectResponse
         return RedirectResponse(url='https://www.pixiv.net/en/artworks'+f'/{post_id}')
 
     return HTMLResponse(
-        content=success_html.format(requested_id=requested_id, SITE_URL=SITE_URL)
+        content=success_html.format(
+            requested_id=requested_id, 
+            SITE_URL=SITE_URL.replace('//', '//www.')
+        )
     )
