@@ -144,25 +144,6 @@ def test_users_settings_no_auth(
     assert settings_response.status_code == 401
     assert settings_response.json()['detail'] == 'Could not validate credentials'
 
-def test_users_settings_wrong_data(
-    create_user, login: Response, client: TestClient):
-
-    settings_response = client.post(
-        'api/settings', 
-        json={
-            'user': 'wrong',
-            'twitter_header': settings.TWITTER_HEADER,
-            'authors_blacklist': '1',
-            'tags_blacklist': '1',
-        }, 
-        cookies={
-            'Authorization': login.cookies.get('Authorization'),
-        },
-        )
-
-    assert settings_response.status_code == 400
-    assert settings_response.json()['detail'] == 'Wrong username'
-
 def test_users_settings_empty_data(
     create_user, login: Response, client: TestClient):
 

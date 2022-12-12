@@ -10,7 +10,6 @@ class Settings(BaseSettings):
 
     # Global settings
     TIMEZONE: int = 2
-    UPDATE_TIMEOUT: int = 20
 
     # Deployment settings
     SITE_URL: str = 'http://localhost:8080'

@@ -27,7 +27,7 @@ def is_discord(request: Request) -> bool:
         'Mozilla/5.0 (compatible; Discordbot/2.0; +https://discordapp.com)',
         'Mozilla/5.0 (Macintosh; Intel Mac OS X 11.6; rv:92.0) Gecko/20100101 Firefox/92.0',
         ]
-    return bool(request.headers.get('user-agent') in discord_useragent)
+    return bool(request.headers.get(key='user-agent') in discord_useragent)
 
 def parse_post_id(requested_id: str) -> ParsedPostId:
     separator = re.search('_p', requested_id)

@@ -1,10 +1,14 @@
+import asyncio
+import logging
 import logging.config
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.testclient import TestClient
-from fastapi_utils.tasks import repeat_every
+import uvicorn
+from rocketry import Rocketry
+from rocketry.conds import cron
 
 from db.database import engine
 from db.base_class import Base
@@ -21,10 +25,8 @@ Base.metadata.create_all(bind=engine) # type: ignore
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/token")
 
-if settings.SITE_URL == "http://localhost:8080":
-    app = FastAPI() # prod
-else:
-    app = FastAPI(docs_url=None, redoc_url=None) # dev
+app = FastAPI()
+
 app.include_router(site_router)
 app.include_router(users_router)
 app.include_router(embed_router)
@@ -39,12 +41,43 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app_rocketry = Rocketry(config={"task_execution": "async"})
+
 @app.on_event("startup")
-@repeat_every(seconds=60 * settings.UPDATE_TIMEOUT)
-def fill_db_on_startup():
+@app_rocketry.task(cron(minute='*/20'))
+async def fill_db_on_startup():
     '''
     Ugly hack to update on startup and timeout
     because of the way Depends() works
     '''
     client = TestClient(app)
     client.get("/api/update")
+
+class Server(uvicorn.Server):
+    """Customized uvicorn.Server
+    
+    Uvicorn server overrides signals and we need to include
+    Rocketry to the signals."""
+    def handle_exit(self, sig: int, frame) -> None:
+        app_rocketry.session.shut_down()
+        return super().handle_exit(sig, frame)
+
+async def main():
+    "Run Rocketry and FastAPI"
+    server = Server(config=uvicorn.Config(
+        app, 
+        loop="asyncio",
+        access_log=False,
+    ))
+
+    api = asyncio.create_task(server.serve())
+    sched = asyncio.create_task(app_rocketry.serve())
+
+    await asyncio.wait([sched, api])
+
+if __name__ == "__main__":
+    # Print Rocketry's logs to terminal
+    logger = logging.getLogger("rocketry.task")
+
+    # Run both applications
+    asyncio.run(main())

@@ -38,8 +38,8 @@ LOGGING_CONFIG = {
         'services': {
             'level': 'DEBUG',
         },
-        'uvicorn': {
+        'rocketry.task': {
             'level': 'ERROR',
-        },
+        }
     }
 }
