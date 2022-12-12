@@ -1,14 +1,10 @@
 fastapi
 uvicorn[standard]
 sqlalchemy
-requests
-fastapi-utils
 beautifulsoup4
 python-multipart
 python-jose[cryptography]
 passlib[bcrypt]
 httpx
-pytest-recording
-pytest-xdist[psutil]
-pytest-asyncio
 aiocache
+rocketry
