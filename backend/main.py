@@ -68,6 +68,8 @@ async def main():
         app, 
         loop="asyncio",
         access_log=False,
+        host='0.0.0.0',
+        port=8000
     ))
 
     api = asyncio.create_task(server.serve())

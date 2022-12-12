@@ -41,10 +41,7 @@ def parse_post_id(requested_id: str) -> ParsedPostId:
 @router.get('/{requested_id}.jpg')
 async def img(request: Request, requested_id: str) -> Response | None:
     post_id, pic_num = parse_post_id(requested_id)
-
-    if not is_discord(request):
-        return RedirectResponse(url='https://www.pixiv.net/en/artworks'+f'/{post_id}')
-
+    
     try:
         image = await pixiv_proxy_image(post_id, pic_num)
     except HTTPException:
