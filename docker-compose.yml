@@ -3,6 +3,7 @@ version: '3.10'
 services:
 
   backend:
+    restart: always
     build: ./backend
     volumes:
       - './backend:/app'
@@ -13,6 +14,7 @@ services:
       - SITE_URL=https://pixiv.sbs
 
   frontend:
+    restart: always
     build:
       context: ./frontend
       args:
