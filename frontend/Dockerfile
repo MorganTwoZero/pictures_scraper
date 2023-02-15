@@ -1,4 +1,4 @@
-FROM node:lts-alpine as frontend
+FROM node:lts-alpine as frontend_builder
 
 WORKDIR /app
 
@@ -8,6 +8,8 @@ COPY ./vue.config.js .
 
 COPY package*.json ./
 RUN npm install
+
+FROM frontend_builder as frontend
 
 COPY ./src ./src
 
