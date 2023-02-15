@@ -1,13 +1,11 @@
+import logging
 import re
 from typing import NamedTuple
-import logging
 
-from fastapi import APIRouter, Request, Response, HTTPException
-from fastapi.responses import RedirectResponse, HTMLResponse
-
-from utils.pixiv_proxy_image import pixiv_proxy_image
+from fastapi import APIRouter, HTTPException, Request, Response
+from fastapi.responses import HTMLResponse, RedirectResponse
 from settings import settings
-
+from utils.pixiv_proxy_image import pixiv_proxy_image
 
 SITE_URL = settings.SITE_URL + '/en/artworks'
 
@@ -27,7 +25,7 @@ def is_discord(request: Request) -> bool:
         'Mozilla/5.0 (compatible; Discordbot/2.0; +https://discordapp.com)',
         'Mozilla/5.0 (Macintosh; Intel Mac OS X 11.6; rv:92.0) Gecko/20100101 Firefox/92.0',
         ]
-    return bool(request.headers.get(key='user-agent') in discord_useragent)
+    return bool(request.headers["User-Agent"] in discord_useragent)
 
 def parse_post_id(requested_id: str) -> ParsedPostId:
     separator = re.search('_p', requested_id)
@@ -39,19 +37,19 @@ def parse_post_id(requested_id: str) -> ParsedPostId:
     return ParsedPostId(int(requested_id), 0)
 
 @router.get('/{requested_id}.jpg')
-async def img(request: Request, requested_id: str) -> Response | None:
+async def img(request: Request, requested_id: str) -> Response:
     post_id, pic_num = parse_post_id(requested_id)
     
     try:
         image = await pixiv_proxy_image(post_id, pic_num)
     except HTTPException:
         logger.exception('Embed error')
-        return
+        return Response(status_code=500)
 
     return Response(content=image, media_type="image/jpeg")
 
 @router.get('/{requested_id}')
-def html(request: Request, requested_id: str) -> HTMLResponse | RedirectResponse:
+def html(request: Request, requested_id: str) -> Response:
     success_html = '''
         <meta name="twitter:card" content="summary_large_image">
         <meta name="twitter:image" content="{SITE_URL}/{requested_id}.jpg">'''

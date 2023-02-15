@@ -1,5 +1,6 @@
-from typing import Iterable, cast
+from typing import Iterable, cast, List, Tuple
 from sqlalchemy.orm import Session
+from sqlalchemy import Row
 
 from db.models import User as UserModel, Settings as SettingsModel
 from db.schemas import UserFront, UserWithTwitter, \
@@ -11,7 +12,7 @@ def get_twitter_users(
     db: Session
     ) -> Iterable[UserWithTwitter]:
 
-    q: Iterable[tuple[UserInDB, SettingsScheme]] = db.query(
+    q: List[Row[Tuple[UserModel, SettingsModel]]] = db.query(
         UserModel, SettingsModel).filter(
         SettingsModel.twitter_header.isnot(None),
         ).join(UserModel).all()
@@ -50,14 +51,14 @@ def get_settings(username: str, db: Session) -> SettingsScheme:
 def get_user_by_username(
     username: str, 
     db: Session
-    ) -> UserInDB | None:
+    ) -> UserModel | None:
 
     user = db.query(UserModel).filter_by(username=username).first()
     return user
 
-def create_user(user: UserFront, db: Session) -> UserInDB | None:
+def create_user(user: UserFront, db: Session) -> UserModel | None:
     if unique(UserModel, db, 'username', user.username):
-        db_user: UserInDB = UserModel(username=user.username, 
+        db_user = UserModel(username=user.username, 
             hashed_password=hash_password(user.password))
         db.add(db_user)
         db.commit()
@@ -77,7 +78,7 @@ def update_settings(
     db: Session
     ) -> SettingsScheme:
 
-    db_settings: SettingsScheme = db.query(
+    db_settings = db.query(
         SettingsModel).filter_by(user=settings_form.user).update(
         {
             'twitter_header': settings_form.twitter_header,

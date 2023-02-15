@@ -13,7 +13,7 @@ async def pixiv_proxy_image(post_id: int, pic_num: int) -> bytes | None:
     if json is None:
         return
     post = json.json().get('body')
-    if not 'illust_details' in post:
+    if 'illust_details' not in post:
         return
 
     img_url = get_img_url(post.get('illust_details'), pic_num)    
