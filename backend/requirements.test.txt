@@ -1,0 +1,4 @@
+pytest-recording
+pytest-xdist[psutil]
+pytest-asyncio
+requests
