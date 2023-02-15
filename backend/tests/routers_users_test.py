@@ -1,6 +1,6 @@
 import pytest
 from datetime import datetime, timedelta
-from requests import Response
+from httpx import Response
 
 from fastapi.testclient import TestClient
 from pydantic.error_wrappers import ValidationError
@@ -202,22 +202,22 @@ def test_users_cookie_expires(
         ))
 
     expires = None
-    for cookie in login.cookies:
+    for cookie in login.cookies.jar:
         if cookie.name == 'Authorization':
             expires = cookie.expires
-
+    
     assert expires == expected_expires
 
 def test_users_cookie_httponly(
     create_user, login: Response, client: TestClient):
 
-    for cookie in login.cookies:
+    for cookie in login.cookies.jar:
         if cookie.name == 'Authorization':
             assert 'HttpOnly' in cookie._rest  # type: ignore
 
 def test_users_cookie_secure(
     create_user, login: Response, client: TestClient):
 
-    for cookie in login.cookies:
+    for cookie in login.cookies.jar:
         if cookie.name == 'Authorization':
             assert cookie.secure

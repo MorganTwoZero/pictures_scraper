@@ -9,7 +9,7 @@ from requests.structures import CaseInsensitiveDict
 from settings import settings
 from routers.embed import router as embed_router
 from routers.embed import parse_post_id
-from main import app
+#from main import app
 
 
 header = CaseInsensitiveDict(

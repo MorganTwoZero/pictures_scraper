@@ -19,10 +19,10 @@ def create_user_with_twitter_header(client: TestClient):
         data={'username': 'test', 'password': 'test'}
         )
 
-    login = client.post(
+    login_cookie = client.post(
         '/api/login', 
         data={'username': 'test', 'password': 'test'}
-        )
+        ).cookies["Authorization"]
 
     client.post(
         'http://localhost:8000/api/settings', 
@@ -33,7 +33,7 @@ def create_user_with_twitter_header(client: TestClient):
             'tags_blacklist': '1',
         }, 
         cookies={
-            'Authorization': login.cookies.get('Authorization'),
+            'Authorization': login_cookie
         },
     )
 
@@ -41,15 +41,15 @@ def create_user_with_twitter_header(client: TestClient):
 def test_site_like(
     create_user_with_twitter_header, client: TestClient):
 
-    login = client.post(
+    login_cookie = client.post(
         '/api/login', 
         data={'username': 'test', 'password': 'test'}
-        )
+        ).cookies["Authorization"]
 
     like = client.get(
-        '/api/like?post_link=https://twitter.com/cha_chya_/status/1600656404301328384/',
+        "/api/like?post_link=https://twitter.com/OZcellt/status/1625362770215735301/",
         cookies={
-            'Authorization': login.cookies.get('Authorization')
+            'Authorization': login_cookie
         }    
     )
 
@@ -69,17 +69,17 @@ def test_site_honkai(fill_db_with_posts, client: TestClient):
 def test_site_homeline(
     create_user_with_twitter_header, client: TestClient):
 
-    login = client.post(
+    login_cookie = client.post(
         '/api/login', 
         data={'username': 'test', 'password': 'test'}
-        )
+        ).cookies["Authorization"]
 
     client.get('/api/update')
     client.get('/api/update')
 
     response = client.get('/api/myfeed',
         cookies={
-            'Authorization': login.cookies.get('Authorization')
+            'Authorization': login_cookie
         }
     )
 

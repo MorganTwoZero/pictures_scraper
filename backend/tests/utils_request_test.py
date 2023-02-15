@@ -38,7 +38,7 @@ async def test_request_pixiv_proxy():
 
 @pytest.mark.vcr
 async def test_request_like_request(user_with_twitter):
-    post_id = 1600656404301328384
+    post_id = 1625362770215735301
     like = await request.like_request(post_id, user_with_twitter)
 
     assert like.status_code == 403
