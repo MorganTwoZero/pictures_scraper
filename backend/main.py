@@ -1,21 +1,22 @@
 import asyncio
+import ast
 import logging
 import logging.config
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import OAuth2PasswordBearer
-from fastapi.testclient import TestClient
 import uvicorn
 from rocketry import Rocketry
 from rocketry.conds import cron
+from httpx import AsyncClient
 
+from deps import get_db
 from db.database import engine
 from db.base_class import Base
 from routers.embed import router as embed_router
-from routers.site import router as site_router
-from routers.users import router as users_router
+from routers.site import router as site_router, set_update_time
 from settings import settings
+from services.update import update
 from log_settings import LOGGING_CONFIG
 
 
@@ -23,12 +24,9 @@ logging.config.dictConfig(LOGGING_CONFIG)
 
 Base.metadata.create_all(bind=engine) # type: ignore
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/token")
-
 app = FastAPI()
 
 app.include_router(site_router)
-app.include_router(users_router)
 app.include_router(embed_router)
 
 app.add_middleware(
@@ -46,12 +44,12 @@ app_rocketry = Rocketry(config={"task_execution": "async"})
 @app.on_event("startup")
 @app_rocketry.task(cron(minute='*/20'))
 async def fill_db_on_startup():
-    '''
-    Ugly hack to update on startup and timeout
-    because of the way Depends() works
-    '''
-    client = TestClient(app)
-    client.get("/api/update")
+    client = AsyncClient(headers=ast.literal_eval(settings.HEADER), timeout=10, follow_redirects=True)
+    async with client:
+        for db in get_db():
+            await update(db, client)
+            set_update_time()
+            
 
 class Server(uvicorn.Server):
     """Customized uvicorn.Server

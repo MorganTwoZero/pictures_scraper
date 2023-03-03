@@ -5,6 +5,7 @@ test_db.db
 /certs
 log.txt
 .ruff_cache
+**/__pycache__
 
 .pytest_cache
 cassettes

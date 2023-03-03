@@ -17,21 +17,6 @@
           <li class="nav-item">
             <a @click="$emit('update')" class="nav-link">Update</a>
           </li>
-          <li class="nav-item">
-            <router-link class="nav-link" to="/about">About</router-link>
-          </li>
-          <li v-if="isAuthenticated" class="nav-item">
-            <a class="nav-link" @click="logout">Logout</a>
-          </li>
-          <li v-if="isAuthenticated" class="nav-item">
-            <router-link class="nav-link" to="/user">{{ User }}</router-link>
-          </li>
-          <li v-if="!isAuthenticated" class="nav-item">
-            <router-link class="nav-link" to="/login">Login</router-link>
-          </li>
-          <li v-if="!isAuthenticated" class="nav-item">
-            <router-link class="nav-link" to="/register">Register</router-link>
-          </li>
           <li class="nav-item nav-link">
             Last update: {{ LastUpdate }}
           </li>
@@ -47,16 +32,12 @@ import { storeToRefs } from 'pinia'
 import router from '@/router'
 const store = useStore()
 
-const { isAuthenticated, User, LastUpdate } = storeToRefs(store)
+const { LastUpdate } = storeToRefs(store)
 
 function refresh(e) {
   if (e.target.getAttribute('href') == router.currentRoute.value.fullPath) {
     location.reload();
   }
-}
-function logout() {
-  store.LogOut();
-  router.push('/honkai');
 }
 function collapseNavBar() {
   const navbar = document.querySelector('.navbar-collapse');

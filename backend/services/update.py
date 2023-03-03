@@ -3,31 +3,22 @@ import logging
 import httpx
 from sqlalchemy.orm import Session
 
+from db.models import HonkaiPost, TwitterFeedPost
 from utils import request, crud
 import parsers
 
 
 logger = logging.getLogger(__name__)
 
-async def save_homeline(db):
-    users = crud.users.get_twitter_users(db)
+async def save_posts(db, client: httpx.AsyncClient):
     try:
-        feeds = await request.request_homeline(users)    
+        posts = await request.request_honkai(client)    
     except (httpx.TimeoutException, httpx.ConnectError):
         return
 
-    for user, feed in feeds:
-        if feed.is_success:
-            parsed = parsers.homeline.parse(feed.json())
-            for post in parsed:
-                crud.posts.save_post_many_users(db, post, user)
-    logger.debug('Homeline updated')
-
-async def save_honkai(db):
-    try:
-        posts = await request.request_honkai()    
-    except (httpx.TimeoutException, httpx.ConnectError):
-        return
+    myfeed = parsers.homeline.parse(posts.myfeed)
+    for post in myfeed:
+                crud.posts.save_post(post, db, TwitterFeedPost)
 
     parsed = [
         parsers.twitter_honkai.parse(posts.twitter_honkai),
@@ -38,11 +29,10 @@ async def save_honkai(db):
     ]
     parsed = [item for sublist in parsed for item in sublist]
 
-    for i in parsed:
-        crud.posts.save_to_db(i, db)
+    for post in parsed:
+        crud.posts.save_post(post, db, HonkaiPost)
 
-async def update(db: Session):
+async def update(db: Session, client: httpx.AsyncClient):
     logger.debug('Update started')
-    await save_homeline(db)
-    await save_honkai(db)
+    await save_posts(db, client)
     logger.debug('Update ended')

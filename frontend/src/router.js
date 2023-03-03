@@ -1,14 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useStore } from '@/store'
 
 import PostsView from './views/PostsView.vue'
-import AboutView from './views/AboutView.vue'
 
 const routes = [
-  {
-    path: '',
-    redirect: 'honkai',
-  },
   {
     path: '/honkai',
     name: 'honkai',
@@ -22,31 +16,7 @@ const routes = [
     meta: {title: 'My feed'},
   },
   {
-    path: '/about',
-    name: 'about',
-    component: AboutView,
-    meta: {title: 'About'},
-  },
-  {
-    path: '/login',
-    name: 'login',
-    component: () => import('./views/LoginView.vue'),
-    meta: {title: 'Login'},
-  },
-  {
-    path: '/register',
-    name: 'register',
-    component: () => import('./views/RegisterView.vue'),
-    meta: {title: 'Register'},
-  },
-  {
-    path: '/user',
-    name: 'user',
-    component: () => import('./views/UserView.vue'),
-    meta: {title: 'User'},
-  },
-  {
-    path: '/:catchAll(.*)', redirect: '/' 
+    path: '/:catchAll(.*)', redirect: '/honkai' 
   }
 ]
 
@@ -63,17 +33,3 @@ router.afterEach((to) => {
 });
 
 export default router
-
-router.beforeEach((to, from, next) => {
-  // redirect to login page if not logged in and trying to access a restricted page
-  const publicPages = ['/user', '/myfeed'];
-  const authRequired = publicPages.includes(to.path);
-  const store = useStore();
-  const loggedIn = store.isAuthenticated;
-
-  if (authRequired && !loggedIn) {
-    return next('/login');
-  }
-
-  next();
-})

@@ -1,13 +1,9 @@
-import ast
 import asyncio
-from typing import Iterable, Sequence
-from itertools import zip_longest
 import logging
 
-import httpx
+from httpx import AsyncClient, Response, TimeoutException, ConnectError
 
-from settings import settings
-from db.schemas import RequestResults, UserWithTwitter
+from db.schemas import RequestResults
 
 
 logger = logging.getLogger(__name__)
@@ -18,75 +14,36 @@ TWITTER_HOME_URL = 'https://api.twitter.com/1.1/statuses/home_timeline.json?twee
 MIHOYO_URL = 'https://bbs-api.mihoyo.com/post/wapi/getForumPostList?forum_id=4&gids=1&is_good=false&is_hot=false&page_size=20&sort_type=2'
 LOFTER_URL = 'https://www.lofter.com/tag/'
 LOFTER_TAGS = '崩坏3 符华 琪亚娜 丽塔 崩坏三 崩坏3rd 雷电芽衣'
-PIXIV_HEADER: dict[str, str] = ast.literal_eval(settings.PIXIV_HEADER)
-TWITTER_HEADER: dict[str, str] = ast.literal_eval(settings.TWITTER_HEADER)
 TWITTER_LIKE_URL = 'https://api.twitter.com/1.1/favorites/create.json?id='
 BCY_URL = "https://bcy.net/apiv3/common/circleFeed?circle_id=109315&since=0&sort_type=2&grid_type=10"
 
-urls = [PIXIV_URL, TWITTER_SEARCH_URL, MIHOYO_URL, BCY_URL]
-headers = [PIXIV_HEADER, TWITTER_HEADER]
-
+urls = [PIXIV_URL, TWITTER_SEARCH_URL, MIHOYO_URL, BCY_URL, TWITTER_HOME_URL]
 for tag in LOFTER_TAGS.split(' '):
     url = LOFTER_URL + tag
     urls.append(url)
 
-async def _get(
-    client: httpx.AsyncClient, 
-    url: str, 
-    header = None,
-    ) -> httpx.Response:
+async def make_request(
+    client: AsyncClient, 
+    url: str
+    ) -> Response | None:
     try:
-        response = await client.get(url, headers=header, timeout=20)
-    except (httpx.TimeoutException, httpx.ConnectError):
-        '''Return empty response so that user wouldn't 
-        get other user's response in request_homeline_many_users
-        if some request fails'''
-        response = httpx.Response(status_code=400, text='Request timeout')
-        logger.error(
+        response = await client.get(url)
+        return response
+    except (TimeoutException, ConnectError):
+        logger.warning(
             f'Request timeout, URL: {url[:100]}'
             )
-    return response
 
-async def request_honkai() -> RequestResults:
-
-    client = httpx.AsyncClient()
-
+async def request_honkai(client: AsyncClient) -> RequestResults:
     tasks = []
-    for url, header in zip_longest(urls, headers, fillvalue=''):
-        tasks.append(asyncio.ensure_future(_get(client, url, header)))
-
+    for url in urls:
+        tasks.append(asyncio.ensure_future(make_request(client, url)))
     responses = await asyncio.gather(*tasks)
-    await client.aclose()
 
     results = results_to_sources(responses)
-
     return results
 
-async def request_homeline(
-    users: Iterable[UserWithTwitter]
-    ) -> Iterable[tuple[UserWithTwitter, httpx.Response]]:
-    
-    client = httpx.AsyncClient()
-
-    tasks = []
-    for user in users:
-        tasks.append(
-            asyncio.ensure_future(
-                _get(
-                    client, 
-                    TWITTER_HOME_URL, 
-                    ast.literal_eval(user.twitter_header)
-                    )
-                )
-            )
-
-    responses = await asyncio.gather(*tasks)
-    await client.aclose()
-
-    return list(zip(users, responses))
-
-def results_to_sources(
-    results_list: Sequence[httpx.Response]) -> RequestResults:
+def results_to_sources(results_list: list[Response]) -> RequestResults:
 
     results = RequestResults(
         pixiv = results_list[0].json()['body']['illusts'],
@@ -94,38 +51,17 @@ def results_to_sources(
             )['globalObjects']['tweets'].values()),
         bbs_mihoyo = results_list[2].json()['data']['list'],
         bcy = results_list[3].json()['data']['items'],
-        lofter = [result.text for result in results_list[4:]]
-    )
-    
+        myfeed = results_list[4].json(),
+        lofter = [result.text for result in results_list[5:]],
+    )    
     return results
 
-async def pixiv_proxy(url) -> httpx.Response:
-    header=PIXIV_HEADER
-    header.update({'Referer': 'https://www.pixiv.net/'})
-    client = httpx.AsyncClient()
-
-    async with client:
-        response = await _get(client, url, header)
-
-    return response
+async def pixiv_proxy(url, client: AsyncClient) -> Response | None:
+    return await make_request(client, url)
 
 async def like_request(
-    post_id: int, 
-    user: UserWithTwitter,
-    ) -> httpx.Response:
-    client = httpx.AsyncClient()
+    post_id: int,
+    client: AsyncClient
+    ) -> Response:
     url = TWITTER_LIKE_URL + str(post_id)
-    header = ast.literal_eval(user.twitter_header)
-
-    async with client:
-        response = await client.post(url, headers=header, timeout=20)
-
-    return response
-
-async def lofter_proxy(url) -> bytes:
-    client = httpx.AsyncClient()
-
-    async with client:
-        response = await _get(client, url)
-
-    return response.content
+    return await client.post(url)

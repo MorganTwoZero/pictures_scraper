@@ -7,8 +7,8 @@ from settings import settings
 
 logger = logging.getLogger(__name__)
 
-SCARY_TAGS = settings.SCARY_TAGS.split()
-SCARY_AUTHORS = settings.SCARY_AUTHORS.split()
+SCARY_TAGS = settings.SCARY_TAGS
+SCARY_AUTHORS = settings.SCARY_AUTHORS
 POST_LINK_TEMPLATE = 'https://www.pixiv.net/en/artworks/'
 AUTHOR_LINK_TEMPLATE = 'https://www.pixiv.net/en/users/'
 

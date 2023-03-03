@@ -8,7 +8,7 @@ from settings import settings
 
 logger = logging.getLogger(__name__)
 
-SCARY_AUTHORS = settings.SCARY_AUTHORS.split()
+SCARY_AUTHORS = settings.SCARY_AUTHORS
 POST_LINK_TEMPLATE = 'https://bcy.net/item/detail/'
 AUTHOR_LINK_TEMPLATE = 'https://bcy.net/u/'
 

@@ -6,11 +6,7 @@
 
 <script setup>
 import { defineProps } from 'vue'
-
-import { useStore } from '@/store'
-
 import axios from 'axios';
-
 
 const post_link = defineProps({
     post_link: {
@@ -18,10 +14,8 @@ const post_link = defineProps({
         required: true,
     }
 })
-const store = useStore()
 
-
-const isLikeable = post_link.post_link.includes('twitter.com') && store.isAuthenticated
+const isLikeable = post_link.post_link.includes('twitter.com')
 
 function like(e) {
     e.preventDefault();

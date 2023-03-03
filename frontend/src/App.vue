@@ -16,12 +16,8 @@ const toast = useToast()
 const store = useStore()
 
 onBeforeUpdate(() => {
-  if (!document.cookie.includes('username')) {
-    store.LogOut();
-  }
   store.lastUpdateSetter()
 })
-
 
 function update() {
   toast.info("Update requested")

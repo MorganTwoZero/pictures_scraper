@@ -13,19 +13,15 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) 
 
-from db.schemas import UserWithTwitter
-from settings import settings
 from db.base_class import Base
 import deps
 from routers.embed import router as embed_router
 from routers.site import router as site_router
-from routers.users import router as users_router
 
 
 def start_application():
     app = FastAPI()
     app.include_router(site_router)
-    app.include_router(users_router)
     app.include_router(embed_router)
     return app
 
@@ -97,11 +93,3 @@ def vcr_config():
         "filter_headers": ["Authorization"],
         "ignore_localhost": True,
         }
-
-@pytest.fixture
-def user_with_twitter():
-    user = UserWithTwitter(
-        username='test',
-        twitter_header=settings.TWITTER_HEADER,
-    )
-    return user
