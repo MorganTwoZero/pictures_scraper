@@ -1,15 +1,16 @@
 import re
 
 from aiocache import cached
+from httpx import AsyncClient, Response
 
-from utils.request import pixiv_proxy
+from utils.request import make_request
 
 
 @cached()
-async def pixiv_proxy_image(post_id: int, pic_num: int) -> bytes | None:    
+async def pixiv_proxy_image(post_id: int, pic_num: int, client: AsyncClient) -> Response | None:    
     url = 'https://www.pixiv.net/touch/ajax/illust/details?illust_id=' + str(post_id)
     
-    json = await pixiv_proxy(url)
+    json = await make_request(client, url)
     if json is None:
         return
     post = json.json().get('body')
@@ -17,8 +18,8 @@ async def pixiv_proxy_image(post_id: int, pic_num: int) -> bytes | None:
         return
 
     img_url = get_img_url(post.get('illust_details'), pic_num)    
-    img = await pixiv_proxy(img_url)        
-    return img.content
+    img = await make_request(client, img_url)
+    return img
 
 def get_img_url(json: dict, pic_num: int) -> str:
     if pic_num == 0:

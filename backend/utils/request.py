@@ -56,9 +56,6 @@ def results_to_sources(results_list: list[Response]) -> RequestResults:
     )    
     return results
 
-async def pixiv_proxy(url, client: AsyncClient) -> Response | None:
-    return await make_request(client, url)
-
 async def like_request(
     post_id: int,
     client: AsyncClient

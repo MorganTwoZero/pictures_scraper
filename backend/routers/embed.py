@@ -2,8 +2,11 @@ import logging
 import re
 from typing import NamedTuple
 
-from fastapi import APIRouter, HTTPException, Request, Response
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from fastapi.responses import HTMLResponse, RedirectResponse
+from httpx import AsyncClient
+
+from deps import get_request_client
 from settings import settings
 from utils.pixiv_proxy_image import pixiv_proxy_image
 
@@ -37,16 +40,12 @@ def parse_post_id(requested_id: str) -> ParsedPostId:
     return ParsedPostId(int(requested_id), 0)
 
 @router.get('/{requested_id}.jpg')
-async def img(request: Request, requested_id: str) -> Response:
+async def img(requested_id: str, client: AsyncClient = Depends(get_request_client)) -> Response:
     post_id, pic_num = parse_post_id(requested_id)
-    
-    try:
-        image = await pixiv_proxy_image(post_id, pic_num)
-    except HTTPException:
-        logger.exception('Embed error')
-        return Response(status_code=500)
-
-    return Response(content=image, media_type="image/jpeg")
+    image = await pixiv_proxy_image(post_id, pic_num, client)
+    if image is None:
+        return Response("Failed to fetch the image", 500)
+    return Response(content=image.content, media_type="image/jpeg")
 
 @router.get('/{requested_id}')
 def html(request: Request, requested_id: str) -> Response:
@@ -56,7 +55,7 @@ def html(request: Request, requested_id: str) -> Response:
     error_html = '<meta property="twitter:title" content="{}">'
 
     try:
-        post_id, pic_num = parse_post_id(requested_id)
+        post_id, _ = parse_post_id(requested_id)
     except ValueError:
         return HTMLResponse(error_html.format('Cannot parse post id'), 400)
 
