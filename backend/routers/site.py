@@ -80,6 +80,7 @@ async def lofter_link(lofter_link: str, preview: bool = False, client: AsyncClie
     main_pic_preview = "?imageView&thumbnail=500x0&quality=96"
     author_avatar_preview = "?imageView&thumbnail=60x60&quality=90&type=jpg"
 
+    client.headers = dict()
     if preview:
         image = await request.make_request(client, lofter_link+main_pic_preview)
     else:
