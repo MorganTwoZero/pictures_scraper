@@ -20,8 +20,16 @@ services:
       args:
         - VUE_APP_BACKEND_URL=https://pixiv.sbs/api
     ports:
-      - 80:80
-      - 443:443
+      - 8001:443
     volumes:
       - './nginx/nginx.conf:/etc/nginx/nginx.conf'
       - './certs:/certs'
+    environment:
+      - VIRTUAL_HOST=pixiv.sbs,www.pixiv.sbs
+      - VIRTUAL_PORT=8001
+      - LETSENCRYPT_HOST=pixiv.sbs,www.pixiv.sbs
+
+networks:
+  default:
+    external:
+      name: net
